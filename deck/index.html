@@ -419,40 +419,44 @@
     </section>
 
     <!-- ---- 02 ------------------------------------------------------- -->
-    <!-- Remote Control & SSH. Green (.rc) = Remote Control, blue (.ssh) = SSH.
+    <!-- Remote Control & SSH. Orange (.rc) = Remote Control, blue (.ssh) = SSH:
+         the options part's own accent pair, so the stack matches the deck.
          Status uses icons only (✅ keeps working, ❌ stops, ⏸ pauses), never
-         green/red, so it doesn't clash with the two category accents. -->
+         green/red, so it doesn't clash with the two category accents.
+         Four slides: herdr, mosh and reaching the server are covered in
+         Part 1 and option 01, so this stack only points there. -->
     <section>
       <section data-part="options" data-title="02 Two ways to leave your desk" class="option rcssh">
         <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="02 Claude app"></div>
         <div class="opt-kicker">Option 02 &middot; Claude app + CLI &middot; Remote Control &amp; SSH</div>
-        <h2>Two ways to leave your desk</h2>
+        <h2>Reach your session from anywhere, or run it on your server</h2>
         <div class="ways">
           <div class="way rc">
             <div class="way-hd"><b>Remote Control</b><span>changes <em>how you reach</em> a session</span></div>
             <div class="lane">
               <span class="box">📱 phone &middot; web &middot; Desktop</span>
               <span class="hop relay"><span>☁ Anthropic relay</span></span>
-              <span class="box host">💻 your laptop</span>
+              <span class="box host">🖥 Host</span>
             </div>
             <dl class="fields">
-              <dt>Host</dt><dd>Where you started it, usually your own laptop</dd>
+              <dt>Host</dt><dd>The machine where you started the session: a laptop, desktop or server</dd>
               <dt>Client</dt><dd>Phone, browser or another Desktop app: a window into the session</dd>
               <dt>Transport</dt><dd>Outbound HTTPS via the Anthropic API. No inbound ports.</dd>
             </dl>
             <p class="one">&ldquo;The agent stays home, you take the remote&rdquo;</p>
+            <p class="rule-line">Close the client: keeps working. Close the host: stops.</p>
           </div>
           <div class="way ssh">
             <div class="way-hd"><b>SSH</b><span>changes <em>where</em> the session runs</span></div>
             <div class="lane">
               <span class="box">💻 terminal or Desktop app</span>
-              <span class="hop line"><span>ssh</span></span>
-              <span class="box host">🖥 devbox / VM / server</span>
+              <span class="hop line"><span>ssh &middot; tailnet</span></span>
+              <span class="box host">🖥 Host</span>
             </div>
             <dl class="fields">
-              <dt>Host</dt><dd>A remote machine: devbox, VM or server</dd>
+              <dt>Host</dt><dd>A remote machine: your <code>dev-server</code>, a VM or a server</dd>
               <dt>Client</dt><dd>A terminal or the Desktop app on your laptop</dd>
-              <dt>Transport</dt><dd>A direct SSH connection</dd>
+              <dt>Transport</dt><dd>SSH over your tailnet (Part 1)</dd>
             </dl>
             <p class="one">&ldquo;Move the agent to a machine that never sleeps&rdquo;</p>
           </div>
@@ -466,10 +470,10 @@
           </div>
         </div>
         <aside class="notes">
-          This option replaces the old "Claude App on Windows" slide. Press down for
-          the full walk-through; this top slide works on its own if time is short.
+          Press down for the walk-through: three more slides. This top slide works on
+          its own if time is short.
           Storyline: Remote Control decides HOW you reach a session, SSH decides WHERE
-          it runs, and the payoff (last slides of this stack) is combining the two.
+          it runs, and the payoff (last slide of this stack) is combining the two.
           Two words for the whole stack: host = where the claude process runs and the
           work happens; client = what you look at. Closing the client is harmless,
           closing the host stops the work.
@@ -482,11 +486,13 @@
           Another computer: Remote Control sessions appear in claude.ai/code and in
           every Claude Desktop app signed in to the same account.
           End on the chain-link item: they aren't either/or, you can combine them.
-          That's the payoff at the end of this stack, whether the SSH session comes from
-          the Desktop app, plain ssh or herdr.
+          Ties back to Part 1, "One laptop isn't enough": Remote Control alone is the
+          "+ phone" step (the laptop must stay open); SSH is the "+ server" step. The SSH
+          path always goes over the tailnet from Part 1; keeping sessions alive on the
+          server is option 01.
           Out of scope here: cloud sessions, /teleport, routines. That's option 04.
-          Sources: code.claude.com/docs/en/remote-control, Desktop docs (SSH sessions),
-          herdr.dev/docs/connecting-machines. Facts checked against the docs on 2026-11-04.
+          Sources: code.claude.com/docs/en/remote-control, Desktop docs (SSH sessions).
+          Facts checked against the docs on 2026-11-04.
         </aside>
       </section>
 
@@ -502,100 +508,44 @@
             <tr class="star"><th>⭐ Always on</th><td><code>/config</code> &rarr; Enable Remote Control for all sessions</td><td>Settings &rarr; Code &rarr; Connect new sessions to Remote Control</td><td><strong>Easiest:</strong> switch it on once, every new session shows up on your phone. Key to the combo at the end.</td></tr>
           </tbody>
         </table>
-        <p class="foot">* Desktop only uses <code>/remote-control</code>. For server mode run <code>claude remote-control</code> in a terminal (Desktop's Terminal pane works); it stops when that terminal closes.<br>
-          Needs a claude.ai login (Pro / Max / Ultra / Team / Enterprise). API keys, Bedrock, Vertex / Foundry and custom gateways aren't supported. Team / Enterprise: an Owner enables it first.</p>
+        <div class="rc-below">
+          <div>
+            <div class="label-sm">Server mode flags worth knowing</div>
+            <table class="flag-mini">
+              <tr><td><code>--spawn worktree</code></td><td>A git worktree per session, no edit conflicts</td></tr>
+              <tr><td><code>--capacity &lt;N&gt;</code></td><td>Max concurrent sessions (default 32)</td></tr>
+              <tr><td><code>--permission-mode acceptEdits</code></td><td>Fewer approvals on your phone</td></tr>
+              <tr><td><code>-c</code> / <code>--continue</code></td><td>Bring sessions back after a stop (about 4 h)</td></tr>
+            </table>
+          </div>
+          <p class="foot">* Desktop only uses <code>/remote-control</code>. For server mode run <code>claude remote-control</code> in a terminal (Desktop's Terminal pane works); it stops when that terminal closes.</p>
+        </div>
         <aside class="notes">
-          Keep this one light; server-mode flags are on the next slide down.
           "Always on" is "remoteControlAtStartup": true in ~/.claude/settings.json. A
           checked-in project .claude/settings.json can only turn it OFF, so a repository
           can't switch it on for everyone.
           Outside server mode, each process or Desktop session gets one remote session.
           In server mode, press spacebar to show a QR code for your phone.
+          More server flags: --name "My Project" (title in the session list),
+          --spawn same-dir (default, sessions share the folder) | worktree | session
+          (exactly one), w toggles spawn mode at runtime; --session-id to resume a
+          specific one; --[no-]create-session-in-dir (on by default); --chrome /
+          --no-chrome lets remote sessions use Chrome on the host; --verbose,
+          --debug-file for troubleshooting.
           Running example: halfway through api-refactor at 17:30, type /rc and the
           session follows you to the phone.
-          Source: code.claude.com/docs/en/remote-control, checked 2026-11-04.
-        </aside>
-      </section>
-
-      <section data-part="options" data-title="Server mode flags" class="option rcssh" data-interactive>
-        <div class="opt-kicker rc-k">Remote Control &middot; server mode</div>
-        <h2>Server mode: the flags you'll actually use</h2>
-        <div class="flags-wrap">
-          <table class="matrix flag-table">
-            <tbody>
-              <tr><td><code>--name "My Project"</code></td><td>Title in the session list</td></tr>
-              <tr><td><code>--spawn &lt;mode&gt;</code></td><td><b>same-dir</b> (default): sessions share the folder. <b>worktree</b>: a git worktree each, no edit conflicts. <b>session</b>: exactly one. <kbd>w</kbd> toggles at runtime.</td></tr>
-              <tr><td><code>--capacity &lt;N&gt;</code></td><td>Max concurrent sessions (default 32)</td></tr>
-              <tr><td><code>--permission-mode</code></td><td>e.g. <code>acceptEdits</code>: fewer approvals on your phone</td></tr>
-              <tr><td><code>-c</code>, <code>--session-id</code></td><td>Bring sessions back after stopping the server (about 4 h)</td></tr>
-              <tr><td><code>--[no-]create-session-in-dir</code></td><td>Pre-create a session to type right away (on by default)</td></tr>
-              <tr><td><code>--chrome</code> / <code>--no-chrome</code></td><td>Let remote sessions use Chrome on the host</td></tr>
-              <tr><td><code>--verbose</code>, <code>--debug-file</code></td><td>Troubleshooting</td></tr>
-            </tbody>
-          </table>
-          <div class="flagb" data-widget="flagBuilder">
-            <div class="ctl"><span>--spawn</span><div class="seg" data-key="spawn">
-              <button data-v="same-dir">same-dir</button><button data-v="worktree">worktree</button><button data-v="session">session</button></div></div>
-            <div class="ctl"><span>--capacity</span><div class="seg" data-key="cap">
-              <button data-v="4">4</button><button data-v="8">8</button><button data-v="32">32</button></div></div>
-            <div class="ctl"><span>--permission-mode</span><div class="seg" data-key="perm">
-              <button data-v="default">default</button><button data-v="acceptEdits">acceptEdits</button></div></div>
-            <div class="terminal fb-cmd" data-role="cmd"></div>
-            <div class="fb-diagram" data-role="diagram"></div>
-            <div class="fb-note" data-role="note">&nbsp;</div>
-            <div class="toolbar">
-              <button class="btn primary" data-role="run">Next preset <span class="kbd">B</span></button>
-              <button class="btn" data-role="reset">Reset <span class="kbd">R</span></button>
-            </div>
-          </div>
-        </div>
-        <aside class="notes">
-          Optional detail slide. Flag builder: B steps through three presets
-          (default, the worktree power-user setup, single session); you can also click
-          the toggles. The command on screen is what you'd type; the diagram shows N
-          sessions sharing one folder versus N worktrees.
-          The diagram draws at most 8 sessions; the number is the capacity, not a
-          measurement. Illustrative.
-          -c / --continue and --session-id bring sessions back after you stop the server,
-          for about 4 hours.
-          Source: code.claude.com/docs/en/remote-control, checked 2026-11-04.
-        </aside>
-      </section>
-
-      <section data-part="options" data-title="Remote Control: what you can close" class="option rcssh">
-        <div class="opt-kicker rc-k">Remote Control &middot; client vs host</div>
-        <h2 class="headline">Close the client &rarr; Claude keeps working.<br>Close the host &rarr; Claude stops.</h2>
-        <div class="split">
-          <div class="card side client">
-            <h4>✅ Client side &middot; safe to close</h4>
-            <p class="sub">phone app, browser, Desktop on another computer</p>
-            <ul>
-              <li>The session keeps running on the host. Nothing is lost.</li>
-              <li>Open the app again: same conversation, progress synced.</li>
-              <li>Push still reaches you on &ldquo;done&rdquo; or &ldquo;needs a decision&rdquo;.</li>
-              <li>Switch freely: phone &rarr; browser &rarr; terminal.</li>
-            </ul>
-          </div>
-          <div class="card side host">
-            <h4>⏸ Host side &middot; must stay on</h4>
-            <p class="sub">the machine running <code>claude</code></p>
-            <table class="mini">
-              <tr><th>Lid closed, sleep, network drop</th><td>⏸ Goes offline, work pauses. Reconnects when the host is back.</td></tr>
-              <tr><th>Terminal closed, Desktop quit, claude stopped</th><td>❌ Session stops. Bring it back: <code>claude --continue</code> or <code>--resume</code>. Server mode: <code>remote-control --continue</code> (about 4 h)</td></tr>
-              <tr><th>Long outage, host awake</th><td>Interactive (<code>--rc</code>, <code>/rc</code>, Desktop): ✅ keeps working, reconnects. Server mode: ❌ exits after about 10 min.</td></tr>
-            </table>
-          </div>
-        </div>
-        <div class="where">
-          <span class="q">So where does the host run?</span>
-          <span><b>My laptop</b> ⏸ can't close it: it <em>is</em> the host</span>
-          <span><b>An always-on machine</b> ✅ laptop and phone are only clients &rarr; that's SSH</span>
-        </div>
-        <aside class="notes">
-          One core idea. Desktop vs CLI makes no difference here: what matters is whether
-          that machine is the client or the host. Running example: at 17:30 with
-          Remote Control on the laptop, closing the lid pauses api-refactor until you
-          open it at home. Press down for the live version.
+          Client vs host (if asked): closing the client (phone app, browser, Desktop on
+          another computer) is harmless: the session keeps running on the host, push still
+          reaches you, and you pick it up again with progress synced. Closing the host is
+          what matters:
+          lid closed, sleep or network drop: the session goes offline, work pauses, and it
+          reconnects automatically on wake.
+          terminal closed, Desktop quit, claude stopped: the session stops. Bring it back
+          with claude --continue or --resume; server mode: claude remote-control
+          --continue, within about 4 hours.
+          long network outage with the host awake: interactive sessions (--rc, /rc,
+          Desktop) keep working locally and reconnect; server mode gives up after about
+          10 minutes and exits.
           Security and data: outbound HTTPS only, short-lived scoped credentials, the
           transcript is stored at Anthropic for sync. Optional Trusted Devices (biometric
           step-up every 18 hours). disableRemoteControl turns it off org- or machine-wide.
@@ -605,53 +555,50 @@
         </aside>
       </section>
 
-      <section data-part="options" data-title="Close the client, close the host (demo)" class="option rcssh" data-interactive>
-        <div class="opt-kicker rc-k">Remote Control &middot; live</div>
-        <h2>Pull the plug on each side</h2>
-        <div class="rcdemo" data-widget="rcClose">
-          <div class="dev client" data-role="client"><b>📱 Phone</b><span>Claude app &middot; client</span><i data-role="client-st">connected</i></div>
-          <div class="link"><span class="relay">Anthropic relay</span></div>
-          <div class="dev host" data-role="host"><b>💻 Laptop</b><span><code>claude --rc</code> &middot; host</span><i data-role="host-st">working</i></div>
-          <div class="session" data-role="session">
-            <div class="sh"><span>api-refactor</span><span class="st" data-role="sess-st">✅ working</span></div>
-            <div class="bar"><span data-role="bar"></span></div>
-          </div>
-        </div>
-        <div class="rc-verdict" data-role="verdict">&nbsp;</div>
-        <div class="toolbar" style="margin-top:10px;margin-bottom:0">
-          <button class="btn primary" data-role="run">Next event <span class="kbd">B</span></button>
-          <button class="btn" data-role="reset">Reset <span class="kbd">R</span></button>
-          <span class="label">event <b data-role="count">0/4</b></span>
-        </div>
-        <aside class="notes">
-          Before pressing: "watch the session bar, not the devices".
-          1: close the phone app. The host keeps working, the bar keeps moving.
-          2: open the phone again: same conversation, progress synced.
-          3: close the laptop lid. The host sleeps: session offline, work paused.
-          It reconnects on wake.
-          4: quit claude on the host. The session stops; bring it back with
-          claude --continue.
-          Illustrative animation, not a capture.
-        </aside>
-      </section>
-
-      <section data-part="options" data-title="SSH: three flavours, three lifetimes" class="option rcssh">
+      <section data-part="options" data-title="SSH: two flavours, two lifetimes" class="option rcssh">
         <div class="opt-kicker ssh-k">SSH &middot; host = remote machine, client = your laptop</div>
-        <h2>Claude over SSH: three flavours, three lifetimes</h2>
+        <h2>Claude over SSH: two flavours, two lifetimes</h2>
         <table class="matrix ssh-table">
-          <thead><tr><th style="width:15%"></th><th>Desktop app &rarr; SSH environment</th><th>Plain <code>ssh</code> in a terminal</th><th><code>herdr machine add</code></th></tr></thead>
+          <thead><tr><th style="width:18%"></th><th>Desktop app &rarr; SSH environment</th><th>Plain <code>ssh</code> in a terminal</th></tr></thead>
           <tbody>
-            <tr><th>Setup</th><td>Environment selector &rarr; New environment &rarr; SSH. Installs Claude Code on the remote at first connect.</td><td><code>ssh devbox</code>, then <code>claude</code></td><td>Once, from the laptop. Installs and starts herdr on the remote.</td></tr>
-            <tr><th>Where Claude runs</th><td>Remote, under a background helper</td><td>Remote, as a child of your SSH shell</td><td>Remote, under the remote herdr server</td></tr>
-            <tr class="hl"><th>Client goes away <small>Wi-Fi, lid, quit</small></th><td>✅ Keeps running until done or it needs you. Reconnects by itself with an agent key.</td><td>❌ Stops. Conversation saved (<code>--continue</code>), in-flight work lost.</td><td>✅ Keeps running. Panes dim until herdr reconnects.</td></tr>
-            <tr><th>⚠️ Catch</th><td>No Browser pane: forward ports yourself</td><td>Disconnect = work lost</td><td>Third-party tool</td></tr>
-            <tr><th>Overview</th><td>Desktop sidebar</td><td>&mdash;</td><td>One TUI, all machines: working / blocked / done</td></tr>
-            <tr><th>From phone</th><td>✅ with Remote Control on</td><td>✅ with Remote Control on, only while SSH is alive</td><td>✅ with Remote Control on</td></tr>
+            <tr><th>Setup</th><td>Environment selector &rarr; New environment &rarr; SSH. Installs Claude Code on the remote at first connect.</td><td><code>ssh dev-server</code>, then <code>claude</code></td></tr>
+            <tr class="hl"><th>Client goes away <small>Wi-Fi, lid, quit</small></th><td>✅ Keeps running: Claude runs under a background helper on the remote. Reconnects by itself with an agent key.</td><td>❌ Stops: Claude is a child of your SSH shell. Conversation saved (<code>--continue</code>), in-flight work lost. Keep it alive on the server with herdr (option 01).</td></tr>
+            <tr><th>⚠️ Catch</th><td>No SSH agent forwarding: set up git credentials on the remote</td><td>Disconnect = work lost</td></tr>
           </tbody>
         </table>
+        <div class="label-sm prereq-hd">First: the host needs an SSH server, and it's often off by default</div>
+        <div class="prereq">
+          <div class="card pad-sm">
+            <h4>Windows 10 / 11</h4>
+            <p>Only the SSH <em>client</em> is installed. Add the server as an optional feature (PowerShell as admin):</p>
+            <div class="terminal"><span class="p">&gt;</span> Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+<span class="p">&gt;</span> Start-Service sshd
+<span class="p">&gt;</span> Set-Service sshd -StartupType Automatic</div>
+          </div>
+          <div class="card pad-sm">
+            <h4>macOS</h4>
+            <p>Off by default. System Settings &rarr; General &rarr; Sharing &rarr; <b>Remote Login</b>.</p>
+          </div>
+          <div class="card pad-sm">
+            <h4>Linux</h4>
+            <p>Desktop installs often lack it: <code>sudo apt install openssh-server</code>.</p>
+          </div>
+        </div>
         <aside class="notes">
           Same lens as Remote Control: the remote machine is the host, your laptop is the
           client. Question: does the host process survive when the client goes away?
+          Reaching the dev-server from outside is Part 1 (Tailscale); a server-side session
+          manager that survives the disconnect is option 01. Not repeated here.
+          SSH server per OS: Windows 10 (1809+) and 11 ship the OpenSSH client, not the
+          server. GUI route: Settings, System, Optional features, View features, add
+          "OpenSSH Server". The install normally adds the inbound firewall rule for port
+          22 ("OpenSSH-Server-In-TCP"); check with Get-NetFirewallRule if you can't
+          connect. The default shell over SSH is cmd.exe; admin accounts use
+          C:\ProgramData\ssh\administrators_authorized_keys instead of
+          ~/.ssh/authorized_keys. Desktop SSH supports Windows hosts only with limits,
+          so a Linux or macOS host is the smoother choice.
+          macOS CLI alternative: sudo systemsetup -setremotelogin on.
+          Linux: sudo systemctl enable --now ssh (sshd on Fedora/Arch).
           Desktop SSH: Claude runs under a background helper Desktop installs on the
           remote (Desktop v2.31226.0+). The helper stops after 30 days without a
           connection, and on Linux KillUserProcesses=yes can end the processes.
@@ -659,120 +606,133 @@
           worktree folder. Auto-reconnect needs a login without a prompt (SSH-agent key).
           Extras: permission modes, connectors, plugins and MCP all work. Skills come from
           the remote ~/.claude/skills. No Browser pane or preview servers:
-          ssh -N -L 3000:localhost:3000 devbox. You can't move an SSH session to the cloud.
+          ssh -N -L 3000:localhost:3000 dev-server. You can't move an SSH session to the cloud.
           Remote host: Linux/macOS (Windows with limits), SFTP enabled, about 1 GB free.
           Plain ssh: claude is a child of your SSH shell, so the disconnect (SIGHUP) ends it.
-          herdr: young (v0.9.x). Remote panes use the remote's own commands, config and
-          secrets. Host-key changes need an interactive herdr --remote &lt;host&gt;.
-          Running example: api-refactor on the devbox; close the lid at 17:30. Column 2
-          dies, columns 1 and 3 keep going. Press down for herdr.
+          From the phone: both show up in the Claude app with Remote Control on; plain ssh
+          only while the SSH connection is alive.
+          Running example: api-refactor on the dev-server; close the lid at 17:30. Desktop SSH
+          keeps going, plain ssh dies. Press down for what the Desktop app can do over SSH.
         </aside>
       </section>
 
-      <section data-part="options" data-title="herdr machine add" class="option rcssh">
-        <div class="opt-kicker ssh-k">SSH &middot; herdr</div>
-        <h2>herdr machine add: one TUI, every machine</h2>
-        <div class="terminal"><span class="p">$</span> herdr machine add devbox --label "Devbox"   <span class="dim"># once, from the laptop</span>
-<span class="p">$</span> herdr                                        <span class="dim"># local TUI: Local + Devbox in the sidebar</span></div>
-        <div class="grid-2 herdr-why">
-          <div class="card pad-sm"><h4>Stay in your local TUI</h4><p>Laptop agents and devbox agents sit side by side in one sidebar.</p></div>
-          <div class="card pad-sm"><h4>Pick a machine, get an agent</h4><p><kbd>prefix</kbd>+<kbd>w</kbd> &rarr; select &rarr; Enter. No second terminal, no nested SSH.</p></div>
-          <div class="card pad-sm"><h4>Background updates</h4><p>A blocked agent on the devbox shows up while you work locally.</p></div>
-          <div class="card pad-sm"><h4>Git over SSH</h4><p><code>ForwardAgent yes</code> for that host. Desktop SSH disables agent forwarding.</p></div>
-        </div>
-        <aside class="notes">
-          Why herdr machine add instead of "ssh in, then run herdr": you never leave your
-          local herdr. machine add takes an SSH config host or ssh://you@server:2222; it
-          offers to install herdr on the remote and starts the remote herdr server. Every
-          machine runs its own server, sessions and processes.
-          Other subcommands: herdr machine status (reachable?), list, reconnect, rename,
-          disable, enable, remove. herdr --machine Devbox agent list scripts remote agents
-          without the TUI.
-          Source: herdr.dev/docs/connecting-machines (third-party), checked 2026-11-04.
-        </aside>
-      </section>
-
-      <section data-part="options" data-title="Pick your setup" class="option rcssh">
-        <div class="opt-kicker">Remote Control vs SSH</div>
-        <h2>Pick your setup</h2>
-        <table class="matrix pick-table">
-          <thead><tr><th style="width:12%"></th><th class="rc-h">Remote Control <small>host = your laptop</small></th><th class="ssh-h">SSH <small>host = an always-on machine</small></th></tr></thead>
+      <section data-part="options" data-title="Desktop app over SSH: what works" class="option rcssh">
+        <div class="opt-kicker ssh-k">SSH &middot; Desktop app &rarr; SSH environment</div>
+        <h2>The Desktop app over SSH: what works, per host</h2>
+        <table class="matrix ssh-table caps-table">
+          <thead><tr><th style="width:22%">Feature</th><th>Linux / macOS host</th><th>Windows host</th></tr></thead>
           <tbody>
-            <tr><th>Pros</th>
-              <td>Zero network setup: no ports, VPN or keys. Your full local env: MCP, tools, git credentials, <code>.npmrc</code>. Native app + push. Phone, web and Desktop at once.</td>
-              <td>Closing the laptop is fine (herdr / tmux or Desktop's helper). Lots of CPU and RAM, close to the data. Your laptop stays free.</td></tr>
-            <tr><th>Cons</th>
-              <td>The laptop has to stay awake. Needs a claude.ai login: no API key, Bedrock or LLM gateway.</td>
-              <td>Keys, <code>~/.ssh/config</code>, jump hosts. The remote needs its own dev env: git + gh credentials, registry tokens, the right Node. Port forwarding for dev servers. Plain ssh stops on disconnect.</td></tr>
-            <tr><th>Best for</th>
-              <td>&ldquo;Started at my desk, keep going from the couch or the train&rdquo;</td>
-              <td>&ldquo;Long or heavy work on a beefy machine that never sleeps&rdquo;</td></tr>
+            <tr><th>Files pane</th><td>✅ View only: ask Claude to make edits</td><td>⚠️ View only, and can be unstable: we hit issues in our own tests</td></tr>
+            <tr><th>Diff view</th><td>✅ Review changes file by file</td><td>✅ Review changes file by file</td></tr>
+            <tr><th>Integrated terminal</th><td>✅ Opens on the remote, in the session folder</td><td>❌ Doesn't open for a Windows path (<code>C:/projects/app</code>)</td></tr>
+            <tr><th>Browser pane &amp; preview servers</th><td>❌ Forward ports yourself: <code>ssh -N -L 3000:localhost:3000 dev-server</code></td><td>❌ Same</td></tr>
+            <tr><th>Create PR</th><td>✅ Needs <code>git</code> + <code>gh</code> set up on the remote. &ldquo;Merge when ready&rdquo; is off.</td><td>✅ Same</td></tr>
+            <tr><th>MCP, plugins, connectors</th><td>✅ Skills come from the remote <code>~/.claude/skills</code></td><td>⚠️ Plugins with names Windows can't store (e.g. <code>:</code>) are skipped. MCP tools may need Desktop connected.</td></tr>
+            <tr><th>Worktrees</th><td>✅ In the Worktree folder you set on the connection</td><td>⚠️ Always <code>&lt;project&gt;/.claude/worktrees</code></td></tr>
           </tbody>
         </table>
-        <blockquote class="pull"><p>They aren't either/or. Press down for the combo.</p></blockquote>
+        <p class="takeaway"><b>Takeaway:</b> prefer a Linux or macOS host. Windows needs more setup (OpenSSH Server, shell and tools) and has fewer Desktop app features.</p>
+        <p class="foot">Windows host shell: <code>cmd.exe</code>, PowerShell 5.1 or Git Bash. Your dev tools (<code>node</code>, <code>yarn</code>, <code>git</code>, <code>gh</code>) must be installed and on the PATH in that shell. The docs warn Windows gets less testing than Linux: try your own work there first.</p>
         <aside class="notes">
-          Remote Control: the transcript is relayed through Anthropic, ZDR/HIPAA orgs can't
-          use it, and some commands are local-only.
-          SSH: Desktop SSH disables ForwardAgent, so your local SSH keys aren't available
-          there. Plain ssh and herdr can forward them (ForwardAgent yes). SSH on its own
-          also works with API keys, Bedrock or gateways; adding Remote Control needs a
-          claude.ai login.
+          What you actually get in the Desktop app when the session runs on a remote host.
+          Linux and macOS hosts are the smooth path; Windows hosts work with limits.
+          Files pane: view-only for SSH (and cloud, WSL) sessions; ask Claude to edit.
+          On a Windows host the docs list no extra limit, but in my own test (2026-11-05)
+          the files pane didn't work reliably. That's first-hand, not documented.
+          Terminal: available in SSH sessions, on the remote, in the session's folder;
+          expect one extra SSH login per terminal tab. On Windows it doesn't open when the
+          session folder is a Windows path.
+          Browser pane: Claude doesn't get the pane's tools in an SSH session, so it can't
+          open or auto-verify your app, and the Dev servers menu and preview servers aren't
+          available. Desktop also leaves LocalForward and friends off, so forward ports
+          yourself.
+          Create PR: Claude pushes and runs gh pr create on the remote, so install and
+          authenticate git and gh there (git push, gh auth status). Merge when ready is
+          disabled: turn on auto-merge on GitHub instead.
+          MCP on Windows: on some hosts, MCP servers from claude_desktop_config.json are
+          called through Desktop, so they don't work while Desktop is disconnected (on every
+          Windows host before Desktop v2.37337.0).
+          Worktrees on Windows: Desktop ignores a custom worktree folder.
+          Windows host requires Desktop v2.31226.0 or later and Microsoft's OpenSSH Server.
+          The shell the SSH server starts is where Claude runs commands, so node, yarn,
+          git and gh have to work in that shell, not only in your usual terminal.
+          Other Windows-host limits, if asked: commands run unsandboxed; with cmd.exe or
+          PowerShell you may need to connect to see earlier messages and can fork only at
+          the first message; a task keeps running while disconnected only if the SSH server
+          lets programs outlive the connection, and leftover processes and the helper don't
+          stop on their own.
+          Source: code.claude.com/docs/en/desktop (SSH sessions, Windows remote machines),
+          checked 2026-11-05.
         </aside>
       </section>
 
-      <section data-part="options" data-title="Best of both: SSH host + Remote Control" class="option rcssh">
+      <section data-part="options" data-title="Best combo: SSH + Remote Control" class="option rcssh">
         <div class="opt-kicker"><span class="ssh-k">SSH host</span> + <span class="rc-k">Remote Control always on</span></div>
-        <h2>Best of both: an SSH host with Remote Control always on</h2>
-        <div class="combo">
-          <ol class="rows">
-            <li><strong>Log in once on the remote</strong> with your claude.ai account: <code>claude</code> &rarr; <code>/login</code>. Not an API key.</li>
-            <li><strong>Always on</strong>: <code>/config</code> &rarr; Enable Remote Control for all sessions. Desktop: Settings &rarr; Code &rarr; Connect new sessions.</li>
-            <li><strong>Start agents that survive the disconnect</strong>: a herdr pane, tmux, or a Desktop SSH environment. Plain ssh shows up too, but stops on a drop.</li>
-          </ol>
-          <div class="stack">
-            <figure class="code-window" data-code data-lang="json" data-file="~/.claude/settings.json (remote)">
-              <script type="text/template">
-{ "remoteControlAtStartup": true }
-              </script>
-            </figure>
-            <ul class="rows result">
-              <li>Host never sleeps: nothing to close</li>
-              <li>Laptop and phone are only clients</li>
-              <li>Every session on your phone, with push</li>
-            </ul>
+        <h2>The best combo: start over SSH, steer with Remote Control</h2>
+        <div class="combo-lane">
+          <div class="cl-end">
+            <b>💻 Laptop</b><span>starts the session &middot; client</span>
+            <i>✅ close the lid</i>
+          </div>
+          <div class="cl-hop ssh"><span>ssh &middot; tailnet</span></div>
+          <div class="cl-host">
+            <b>🖥 Always-on host</b><span><code>dev-server</code>, at home or the office</span>
+            <div class="cl-sess"><code>claude</code> api-refactor <em>✅ working</em></div>
+            <div class="cl-sess"><code>claude</code> flaky-tests <em>✅ working</em></div>
+          </div>
+          <div class="cl-hop rc"><span>Remote Control</span></div>
+          <div class="cl-end">
+            <b>📱 Phone</b><span>steer + push &middot; client</span>
+            <i>✅ close the app</i>
           </div>
         </div>
-        <blockquote class="pull hero"><p>Remote Control gives you a remote. SSH gives you a home that never sleeps.</p></blockquote>
+        <p class="cl-caption">Both clients can go away. The sessions live on the host, so they keep working.</p>
+        <div class="combo">
+          <div>
+            <div class="label-sm">Set it up once, on the host</div>
+            <ol class="rows">
+              <li><strong>Log in with claude.ai:</strong> <code>claude</code> &rarr; <code>/login</code>. Not an API key.</li>
+              <li><strong>Remote Control always on:</strong> <code>/config</code> &rarr; Enable Remote Control for all sessions.</li>
+              <li><strong>Start sessions that outlive SSH:</strong> a Desktop SSH environment, or a herdr session on the server (option 01).</li>
+            </ol>
+          </div>
+          <div class="gw">
+            <div class="card good pad-sm"><h4>Good</h4><ul>
+              <li>Every SSH session in the Claude app, no <code>/rc</code> needed</li>
+              <li>Push on &ldquo;done&rdquo; or &ldquo;needs approval&rdquo;</li>
+              <li>Close the lid or the app: work continues</li></ul></div>
+            <div class="card bad pad-sm"><h4>Watch out</h4><ul>
+              <li>The host needs its own claude.ai login and dev env (git, gh, node)</li>
+              <li>A Windows host has fewer Desktop features</li>
+              <li>Plain <code>ssh</code> + <code>claude</code> dies on disconnect</li></ul></div>
+          </div>
+        </div>
         <aside class="notes">
-          The punchline. It's the Always-on setting from the switch-it-on slide, applied
-          to the SSH host. Turn it on once, and every session started over SSH shows up in
-          the Claude app, with no --rc or /rc to remember.
-          In the earlier terms: the host is an always-on box, so it never has to close;
-          laptop and phone are only clients, and closing a client is harmless.
-          The Remote Control docs recommend this pattern themselves: on a remote machine,
-          run claude in tmux/screen so it survives SSH disconnects.
-          Power-user variant: claude remote-control --spawn worktree in a herdr pane, so
-          you start new sessions from your phone, each in its own worktree.
-          Running example: api-refactor runs in a herdr pane on the devbox; close the lid
-          at 17:30, the push "needs approval" arrives in the car park.
-        </aside>
-      </section>
-
-      <section data-part="options" data-title="Does it keep working when I close my laptop?" class="option rcssh">
-        <div class="opt-kicker">Quick reference &middot; Remote Control on everywhere</div>
-        <h2>Does it keep working when I close my laptop?</h2>
-        <table class="matrix quickref">
-          <thead><tr><th>Setup</th><th>Host</th><th>Close the phone <small>client</small></th><th>Close the laptop lid</th></tr></thead>
-          <tbody>
-            <tr><th><span class="tag rc">RC</span> Remote Control on the laptop <small>CLI or Desktop</small></th><td>Laptop</td><td>✅ keeps working</td><td>⏸ pauses, reconnects on wake</td></tr>
-            <tr><th><span class="tag ssh">SSH</span> Desktop app &rarr; SSH environment</th><td>Remote</td><td>✅ keeps working</td><td>✅ keeps working</td></tr>
-            <tr><th><span class="tag ssh">SSH</span> Plain <code>ssh</code> + <code>claude</code></th><td>Remote</td><td>✅ keeps working</td><td>❌ stops, so the phone loses it too</td></tr>
-            <tr><th><span class="tag ssh">SSH</span> herdr machine (or ssh + tmux)</th><td>Remote</td><td>✅ keeps working</td><td>✅ keeps working</td></tr>
-          </tbody>
-        </table>
-        <p class="foot center">Every row has Remote Control on, so the phone column is ✅ everywhere. The last column depends on where the host is, and whether the remote process outlives the SSH connection.</p>
-        <aside class="notes">
-          Backup table for Q&amp;A. Same answers as the earlier slides in one place.
+          The punchline of this stack. Tested first-hand: SSH sessions started on my
+          Windows host at home showed up in the Claude phone app. The diagram reads left to right: you start the
+          session from your laptop over SSH, it runs on the always-on host, and Remote
+          Control puts it on your phone. Both ends are clients; the host never closes.
+          That's why closing the lid or the app is harmless.
+          Setup: step 2 is the Always-on setting from the switch-it-on slide, applied on
+          the SSH host: "remoteControlAtStartup": true in the remote
+          ~/.claude/settings.json, or in Desktop under Settings, Code, Connect new
+          sessions to Remote Control. Remote Control needs a subscription login on the
+          host, not an API key, Bedrock or gateway.
+          Step 3 matters: plain ssh + claude also shows up on the phone, but dies when
+          the SSH connection drops (SIGHUP). Desktop SSH runs Claude under a background
+          helper; a server-side session manager is option 01. The Remote Control docs
+          recommend this pattern themselves: tmux/screen on a remote machine.
+          Each on its own, if asked: Remote Control alone = zero network setup and your
+          full local env, but the laptop must stay awake. SSH alone = closing the laptop
+          is fine and lots of CPU, but the remote needs its own dev env (credentials,
+          registry tokens, the right Node) and port forwarding for dev servers.
+          Remote Control: the transcript is relayed through Anthropic; ZDR/HIPAA orgs
+          can't use it. Desktop SSH disables ForwardAgent.
+          Power-user variant: claude remote-control --spawn worktree on the host, so you
+          start new sessions from your phone, each in its own worktree.
+          Running example: api-refactor keeps running on the dev-server; close the lid at
+          17:30, the push "needs approval" arrives in the car park.
+          One-liner: "Remote Control gives you a remote. SSH gives you a home that never sleeps."
         </aside>
       </section>
     </section>
@@ -912,7 +872,7 @@
         <a class="card" href="https://code.claude.com/docs/en/remote-control" target="_blank" rel="noopener">
           <h4>Remote Control</h4><p>Local session, any device.</p><div class="url">code.claude.com/docs</div></a>
         <a class="card good" href="https://code.claude.com/docs/en/desktop" target="_blank" rel="noopener">
-          <h4>Claude desktop</h4><p>Local and cloud sessions.</p><div class="url">code.claude.com/docs</div></a>
+          <h4>Claude desktop</h4><p>Local, SSH, cloud sessions.</p><div class="url">code.claude.com/docs</div></a>
       </div>
       <aside class="notes">
         Open the floor. Offer to share the server cheat sheet and setup notes.
