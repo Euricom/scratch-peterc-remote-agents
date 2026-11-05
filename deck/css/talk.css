@@ -254,7 +254,8 @@ html.print-pdf .survive .cell, html.print-pdf .survive .hd { transition: none; }
    Option 02 stack: Remote Control (green) & SSH (blue).
    Status is shown with icons only, never with green/red text.
    ========================================================================== */
-:root { --rc: #34d399; --ssh: #5aa9ff; }
+/* The options part's accent pair (DECK_PARTS in index.html): orange + blue. */
+:root { --rc: #ff8a3d; --ssh: #5aa9ff; }
 .rc-k { color: var(--rc) !important; }
 .ssh-k { color: var(--ssh) !important; }
 .reveal .slides section.rcssh > h2 { margin-bottom: 18px; }
@@ -302,6 +303,7 @@ html.print-pdf .survive .cell, html.print-pdf .survive .hd { transition: none; }
 .fields dt { color: var(--c); font-family: var(--font-mono); font-size: .9em; padding-top: 1px; }
 .fields dd { margin: 0; color: var(--fg-dim); line-height: 1.4; }
 .way .one { margin: 10px 0 0; font-size: .46em; color: #fff; font-weight: 600; }
+.way .rule-line { margin: 6px 0 0; font-size: .38em; color: var(--c); font-family: var(--font-mono); }
 .onthego { margin-top: 16px; text-align: left; }
 .onthego .label-sm { margin-bottom: 6px; }
 .onthego .grid-3 { gap: 14px; }
@@ -313,116 +315,17 @@ html.print-pdf .survive .cell, html.print-pdf .survive .hd { transition: none; }
 
 /* slide 2: switch-on table */
 .reveal table.matrix.rc-table { font-size: .5em; }
-.reveal table.matrix.rc-table th, .reveal table.matrix.rc-table td { padding: 11px 14px; vertical-align: top; }
+.reveal table.matrix.rc-table th, .reveal table.matrix.rc-table td { padding: 8px 14px; vertical-align: top; }
 .reveal table.matrix.rc-table thead th { border-bottom: 2px solid var(--rc); }
 .reveal table.matrix.rc-table tr.star th, .reveal table.matrix.rc-table tr.star td {
   background: color-mix(in oklab, var(--rc) 10%, var(--bg)); color: var(--fg);
 }
 .reveal table.matrix code { font-size: .92em; }
 
-/* slide 2b: flags + builder */
-.flags-wrap { display: grid; grid-template-columns: 1.08fr 1fr; gap: 22px; align-items: start; }
-.reveal table.matrix.flag-table { font-size: .4em; }
-.reveal table.matrix.flag-table td { padding: 7px 12px; vertical-align: top; color: var(--fg-dim); }
-.reveal table.matrix.flag-table td:first-child { white-space: nowrap; }
-.reveal table.matrix.flag-table b { color: #fff; font-weight: 600; }
-.flagb {
-  --accent: var(--rc); --accent-soft: color-mix(in oklab, var(--rc) 18%, transparent);
-  --accent-line: color-mix(in oklab, var(--rc) 45%, transparent);
-  text-align: left; background: var(--bg-elevated); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 14px 16px;
-}
-.flagb .ctl { display: grid; grid-template-columns: 150px 1fr; align-items: center; margin-bottom: 6px; }
-.flagb .ctl > span { font-family: var(--font-mono); font-size: .36em; color: var(--fg-dim); }
-.flagb .seg button { font-size: .36em; padding: 5px 10px; }
-.flagb .seg button:disabled { opacity: .35; cursor: default; }
-.flagb .terminal.fb-cmd { margin: 10px 0 8px; font-size: .36em; white-space: pre-wrap; min-height: 2.6em; }
-.fb-diagram { display: flex; flex-wrap: wrap; gap: 6px; min-height: 64px; align-content: flex-start; }
-.fb-diagram .folder {
-  border: 1px solid color-mix(in oklab, var(--rc) 45%, transparent); border-radius: 8px;
-  padding: 4px 8px 6px; font-family: var(--font-mono); font-size: .3em; color: var(--fg-dim);
-  background: color-mix(in oklab, var(--rc) 6%, var(--bg));
-}
-.fb-diagram .folder .dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; max-width: 220px; }
-.fb-diagram .folder.shared { flex: 1 1 100%; }
-.fb-diagram .folder.shared .dots { max-width: none; }
-.fb-diagram .dot {
-  display: block; width: 16px; height: 16px; border-radius: 4px;
-  background: var(--rc); opacity: .85; animation: fbpop .3s ease both;
-}
-.fb-diagram .more { font-size: 1em; color: var(--fg-faint); align-self: center; }
-@keyframes fbpop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: .85; } }
-.fb-note { font-size: .36em; color: var(--fg-dim); min-height: 1.4em; margin: 6px 0 8px; }
-.fb-note b { color: #fff; }
-.flagb .toolbar { justify-content: flex-start; margin: 0; }
-.flagb .toolbar .btn { font-size: .38em; padding: 8px 14px; }
-
-/* slide 3: client vs host */
-.reveal .slides section.rcssh > h2.headline { font-size: 1.12em; line-height: 1.25; }
-.split { display: grid; grid-template-columns: .85fr 1.15fr; gap: 18px; }
-.card.side { padding: 14px 18px; }
-.card.side h4 { color: var(--rc); margin-bottom: 2px; font-size: .62em; }
-.card.side .sub { font-size: .38em; color: var(--fg-faint); margin: 0 0 8px; }
-.card.side ul { margin: 0; padding-left: 1.1em; font-size: .44em; line-height: 1.55; color: var(--fg-dim); }
-.card.side.host { border-color: color-mix(in oklab, var(--rc) 45%, var(--line)); }
-.reveal table.mini { font-size: .4em; border-collapse: collapse; width: 100%; }
-.reveal table.mini th, .reveal table.mini td {
-  border: none; border-top: 1px solid var(--line-soft); padding: 7px 8px; vertical-align: top; text-align: left;
-}
-.reveal table.mini tr:first-child th, .reveal table.mini tr:first-child td { border-top: none; }
-.reveal table.mini th { color: #fff; font-weight: 600; width: 34%; }
-.reveal table.mini td { color: var(--fg-dim); }
-.where {
-  display: grid; grid-template-columns: auto 1fr 1.4fr; gap: 16px; align-items: center;
-  margin-top: 14px; font-size: .42em; color: var(--fg-dim); text-align: left;
-  border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px;
-}
-.where .q { color: var(--rc); font-family: var(--font-mono); }
-.where b { color: #fff; margin-right: 6px; }
-
-/* slide 3b: rcClose widget */
-.rcdemo { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0; align-items: center; margin-top: 10px; }
-.rcdemo .dev {
-  text-align: left; background: var(--bg-elevated); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 16px 20px; transition: opacity .4s ease, filter .4s ease, border-color .4s ease;
-}
-.rcdemo .dev b { display: block; font-size: .62em; color: #fff; }
-.rcdemo .dev span { display: block; font-size: .38em; color: var(--fg-dim); margin: 4px 0 8px; }
-.rcdemo .dev i {
-  font-style: normal; font-family: var(--font-mono); font-size: .34em; padding: 3px 10px;
-  border-radius: 999px; border: 1px solid var(--line); color: var(--fg-dim);
-}
-.rcdemo .dev.host { border-color: color-mix(in oklab, var(--rc) 55%, transparent); }
-.rcdemo .dev.off { opacity: .35; filter: grayscale(1); }
-.rcdemo .link { position: relative; height: 60px; }
-.rcdemo .link::before {
-  content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px dashed var(--rc);
-  transition: opacity .4s ease;
-}
-.rcdemo .link.cut-l::before { left: 50%; }
-.rcdemo .link.cut-r::before { right: 50%; }
-.rcdemo .link.cut-l.cut-r::before { opacity: 0; }
-.rcdemo .relay {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  font-family: var(--font-mono); font-size: .34em; color: var(--rc); white-space: nowrap;
-  background: color-mix(in oklab, var(--rc) 14%, var(--bg)); border: 1px solid color-mix(in oklab, var(--rc) 50%, transparent);
-  border-radius: 999px; padding: 6px 14px;
-}
-.rcdemo .session {
-  grid-column: 1 / -1; margin-top: 22px; text-align: left; background: #0d0f12;
-  border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
-  transition: opacity .4s ease;
-}
-.rcdemo .session .sh { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .4em; color: #fff; }
-.rcdemo .session .bar { display: block; height: 8px; margin-top: 10px; background: var(--panel); border-radius: 99px; overflow: hidden; }
-.rcdemo .session .bar span { display: block; height: 100%; width: 0; background: var(--rc); border-radius: 99px; }
-.rcdemo .session.paused, .rcdemo .session.stopped { opacity: .45; }
-.rc-verdict { min-height: 2.6em; margin-top: 16px; font-size: .5em; color: var(--fg-dim); text-align: center; }
-.rc-verdict b { color: #fff; }
 
 /* slide 4: SSH table */
 .reveal table.matrix.ssh-table { font-size: .42em; }
-.reveal table.matrix.ssh-table th, .reveal table.matrix.ssh-table td { padding: 9px 12px; vertical-align: top; }
+.reveal table.matrix.ssh-table th, .reveal table.matrix.ssh-table td { padding: 7px 12px; vertical-align: top; }
 .reveal table.matrix.ssh-table thead th { border-bottom: 2px solid var(--ssh); }
 .reveal table.matrix.ssh-table tbody th small { display: block; font-weight: 400; color: var(--fg-faint); }
 .reveal table.matrix.ssh-table tr.hl td, .reveal table.matrix.ssh-table tr.hl th {
@@ -439,25 +342,63 @@ html.print-pdf .survive .cell, html.print-pdf .survive .hd { transition: none; }
 .reveal table.matrix.pick-table thead th.rc-h { border-bottom: 3px solid var(--rc); }
 .reveal table.matrix.pick-table thead th.ssh-h { border-bottom: 3px solid var(--ssh); }
 .reveal table.matrix.pick-table thead small { font-weight: 400; color: var(--fg-faint); margin-left: 8px; }
+.rcssh .foot b { color: var(--fg-dim); }
+.reveal table.matrix.ssh-table.caps-table { font-size: .46em; }
+.reveal table.matrix.caps-table code { white-space: nowrap; }
+.rcssh .takeaway {
+  margin: 14px 0 0; padding: 8px 14px; font-size: .46em; color: var(--fg); text-align: left;
+  border-left: 3px solid var(--ssh); background: color-mix(in oklab, var(--ssh) 10%, var(--bg)); border-radius: 6px;
+}
+.rcssh .takeaway b { color: var(--ssh); }
+.rcssh .takeaway + .foot { margin-top: 8px; padding-right: 130px; }
+/* slide 2: flags + footnotes under the table */
+.rc-below { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: start; margin-top: 14px; text-align: left; }
+.rc-below .foot { margin: 22px 0 0; padding-right: 130px; }
+.reveal table.flag-mini { font-size: .38em; border-collapse: collapse; width: 100%; margin: 0; }
+.reveal table.flag-mini td { border: none; border-top: 1px solid var(--line-soft); padding: 5px 8px; color: var(--fg-dim); vertical-align: top; text-align: left; }
+.reveal table.flag-mini tr:first-child td { border-top: none; }
+.reveal table.flag-mini td:first-child { white-space: nowrap; width: 1%; }
+/* slide 4: SSH server prerequisite per OS */
+.prereq-hd { margin-top: 16px; }
+.prereq { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 14px; text-align: left; }
+.prereq .card h4 { font-size: .46em; color: var(--ssh); margin: 0 0 4px; }
+.prereq .card p { font-size: .36em; color: var(--fg-dim); margin: 0 0 6px; line-height: 1.45; }
+.prereq .card p b, .prereq .card p em { color: #fff; font-style: normal; }
+.rcssh .prereq .terminal { font-size: .3em; margin: 0; padding: 8px 10px; white-space: pre; overflow: hidden; }
 .rcssh blockquote.pull { margin-top: 18px; }
-.combo { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; align-items: start; }
+.combo { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; align-items: start; text-align: left; }
+.combo .label-sm { margin-bottom: 8px; }
+.combo .gw { display: grid; gap: 10px; }
+.combo .gw .card ul { margin: 0; padding-left: 1.1em; font-size: .44em; color: var(--fg-dim); line-height: 1.5; }
+.combo .gw .card h4 { margin: 0 0 4px; font-size: .5em; }
+/* combo diagram: laptop --ssh--> host <--RC-- phone */
+.combo-lane { display: grid; grid-template-columns: 1fr auto 1.35fr auto 1fr; align-items: center; margin-top: 6px; }
+.combo-lane .cl-end, .combo-lane .cl-host {
+  text-align: center; background: var(--bg-elevated); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 12px;
+}
+.combo-lane b { display: block; font-size: .5em; color: #fff; }
+.combo-lane .cl-end > span, .combo-lane .cl-host > span { display: block; font-size: .34em; color: var(--fg-dim); margin: 3px 0 6px; }
+.combo-lane .cl-end i { font-style: normal; font-size: .36em; color: var(--fg); }
+.combo-lane .cl-host { border: 2px solid var(--ssh); }
+.combo-lane .cl-sess {
+  display: flex; gap: 8px; align-items: center; justify-content: space-between;
+  font-size: .34em; color: var(--fg-dim); padding: 4px 8px; margin-top: 4px;
+  border-radius: 6px; background: var(--panel);
+}
+.combo-lane .cl-sess em { font-style: normal; color: var(--fg); }
+.combo-lane .cl-hop { --c: var(--ssh); position: relative; padding: 0 14px; font-family: var(--font-mono); font-size: .36em; color: var(--c); white-space: nowrap; }
+.combo-lane .cl-hop.rc { --c: var(--rc); }
+.combo-lane .cl-hop::before { content: ''; position: absolute; left: 4px; right: 4px; top: 50%; border-top: 2px dashed var(--c); }
+.combo-lane .cl-hop span {
+  position: relative; display: inline-block; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--c) 50%, transparent); background: var(--bg);
+}
+.cl-caption { margin: 10px 0 16px; font-size: .46em; color: #fff; font-weight: 600; text-align: center; }
 .combo ol.rows { font-size: .5em; }
-.combo .code-window { margin: 0; }
 .combo ul.rows.result { font-size: .48em; }
 .rcssh blockquote.pull.hero p { font-size: .82em; }
 
-/* quick reference */
-.reveal table.matrix.quickref { font-size: .5em; }
-.reveal table.matrix.quickref td { color: var(--fg); }
-.reveal table.matrix.quickref small { font-weight: 400; color: var(--fg-faint); margin-left: 6px; }
-.quickref .tag, .rcssh .tag {
-  display: inline-block; font-family: var(--font-mono); font-size: .75em; padding: 1px 7px; margin-right: 8px;
-  border-radius: 6px; border: 1px solid currentColor;
-}
-.quickref .tag.rc { color: var(--rc); }
-.quickref .tag.ssh { color: var(--ssh); }
-
-html.print-pdf .rcdemo *, html.print-pdf .fb-diagram .dot { transition: none; animation: none; }
 
 .rcssh table code { white-space: nowrap; }
 .lane { grid-template-columns: 1.2fr auto 1fr; }
