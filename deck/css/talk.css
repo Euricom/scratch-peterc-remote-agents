@@ -1,0 +1,464 @@
+/* ==========================================================================
+   Talk-specific components: the reachability diagram, option headers, the
+   herdr panel and the `survive` widget. Uses the tokens from deck.css.
+   ========================================================================== */
+
+/* --- option kicker: "Option 02 · Self-hosted · TUI" ---------------------- */
+.opt-kicker {
+  font-family: var(--font-mono); font-size: .4em; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 6px; text-align: left;
+}
+.opt-kicker .cloud { color: #5aa9ff; }
+.reveal .slides section > .opt-kicker + h2 { margin-top: 0; }
+.reveal .lead.left { text-align: left; margin: 0 0 20px; }
+
+/* --- reach: device -- obstacle -- machine -------------------------------- */
+.reach {
+  display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: center;
+  gap: 0; margin: 10px 0 26px;
+}
+.reach .end {
+  background: var(--bg-elevated); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 18px 20px; text-align: left;
+}
+.reach .end h4 { margin: 0 0 6px; font-size: .62em; color: #fff; }
+.reach .end p { margin: 0; font-size: .44em; color: var(--fg-dim); line-height: 1.5; }
+.reach .gap { position: relative; height: 110px; }
+.reach .gap::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  border-top: 2px dashed var(--fg-faint);
+}
+.reach .gap .wall {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  background: color-mix(in oklab, var(--bad) 16%, var(--bg));
+  border: 1px solid color-mix(in oklab, var(--bad) 55%, transparent);
+  color: var(--bad); border-radius: 10px; padding: 8px 14px;
+  font-family: var(--font-mono); font-size: .38em; white-space: nowrap;
+}
+.reach.tailnet .gap::before { border-top: 2px solid var(--ok); }
+.reach.tailnet .gap .wall {
+  background: color-mix(in oklab, var(--ok) 14%, var(--bg));
+  border-color: color-mix(in oklab, var(--ok) 55%, transparent); color: var(--ok);
+}
+
+/* --- options spectrum: arrow under the chain ----------------------------- */
+.spectrum {
+  display: flex; justify-content: space-between; margin-top: 14px;
+  font-family: var(--font-mono); font-size: .38em; color: var(--fg-faint);
+}
+.spectrum span:first-child { color: var(--accent); }
+.spectrum span:last-child { color: #5aa9ff; }
+.chain .node.cloud { border-top-color: #5aa9ff; }
+
+/* --- herdr sidebar (illustrative) ---------------------------------------- */
+.herd {
+  font-family: var(--font-mono); font-size: .42em; line-height: 1.9;
+  background: #0d0f12; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 18px; text-align: left; height: 100%; box-sizing: border-box;
+}
+.herd .hd { color: var(--fg-faint); border-bottom: 1px solid var(--line-soft); margin-bottom: 6px; }
+.herd .w { color: var(--warn); }
+.herd .b { color: var(--bad); font-weight: 700; }
+.herd .i { color: var(--fg-faint); }
+.herd .st { float: right; }
+
+/* --- two-column option layout: text left, terminal/visual right ---------- */
+.opt { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; align-items: stretch; }
+.opt .terminal { margin: 0; }
+.opt .grid-2 { gap: 14px; }
+.opt .card ul { margin: 0; padding-left: 1.1em; font-size: .7em; color: var(--fg-dim); line-height: 1.55; }
+.opt .card ul li { margin: 2px 0; }
+.opt .card h4 { margin-bottom: 6px; }
+
+/* ---- widget: survive — which setups keep the agent alive per event ------ */
+.survive { display: grid; grid-template-columns: 1.25fr repeat(3, 1fr); gap: 8px; }
+.survive .hd {
+  font-family: var(--font-mono); font-size: .38em; color: var(--fg-faint);
+  padding: 8px 10px; text-align: center; border-radius: 8px;
+  border: 1px solid transparent; transition: all .3s ease;
+}
+.survive .hd b { display: block; color: var(--fg-dim); font-size: 1.15em; margin-bottom: 2px; }
+.survive .hd.on { border-color: var(--accent); background: var(--accent-soft); color: var(--fg-dim); }
+.survive .hd.on b { color: #fff; }
+.survive .who {
+  font-size: .5em; font-weight: 600; color: #fff; text-align: left;
+  padding: 10px 14px; background: var(--bg-elevated);
+  border: 1px solid var(--line-soft); border-radius: 8px;
+}
+.survive .who small { display: block; font-size: .72em; color: var(--fg-faint); font-weight: 400; font-family: var(--font-mono); }
+.survive .cell {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--font-mono); font-size: .38em; color: var(--fg-faint);
+  background: var(--bg-elevated); border: 1px dashed var(--line); border-radius: 8px;
+  transition: background .35s ease, border-color .35s ease, color .35s ease, transform .35s ease;
+}
+.survive .cell.ok   { color: var(--ok);   border: 1px solid color-mix(in oklab, var(--ok) 50%, transparent);   background: color-mix(in oklab, var(--ok) 12%, var(--bg)); }
+.survive .cell.bad  { color: var(--bad);  border: 1px solid color-mix(in oklab, var(--bad) 50%, transparent);  background: color-mix(in oklab, var(--bad) 12%, var(--bg)); }
+.survive .cell.lost { color: var(--warn); border: 1px solid color-mix(in oklab, var(--warn) 50%, transparent); background: color-mix(in oklab, var(--warn) 12%, var(--bg)); }
+.survive .cell.pop { transform: scale(1.06); }
+.survive-verdict {
+  min-height: 1.5em; margin-top: 14px; font-size: .5em; color: var(--fg-dim); text-align: center;
+  transition: opacity .4s ease;
+}
+.survive-verdict b { color: #fff; }
+
+html.print-pdf .survive .cell, html.print-pdf .survive .hd { transition: none; }
+
+/* --- option slides: one-line title, lighter body ------------------------- */
+.reveal .slides section.option > h2 { font-size: 1.32em; margin-bottom: 26px; }
+.reveal .slides section.option > .opt-kicker { text-align: center; }
+.opt .lead.left { font-size: .62em; }
+.opt .card ul { font-size: .56em; }
+.opt .card.pad-sm ul { font-size: .5em; }
+
+/* two client devices stacked on the left of a .reach diagram */
+.reach .clients { display: flex; flex-direction: column; gap: 10px; }
+.reach .clients .end { padding: 12px 20px; }
+
+/* --- topo: laptop -> + phone -> + server -> phone to server -------------- */
+.topo-wrap { display: grid; grid-template-columns: 660px 1fr; gap: 28px; align-items: center; }
+.topo { position: relative; width: 660px; height: 360px; }
+.topo svg.link { position: absolute; left: 0; top: 0; width: 660px; height: 360px; overflow: visible; }
+.topo svg.link line { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 7 6; }
+.topo .dev {
+  position: absolute; box-sizing: border-box; width: 240px; height: 96px;
+  background: var(--bg-elevated); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 18px; text-align: left;
+}
+.topo .dev h4 { margin: 0 0 4px; font-size: .58em; color: #fff; }
+.topo .dev p { margin: 0; font-size: .42em; color: var(--fg-dim); }
+.topo .laptop { left: 0; top: 22px; }
+.topo .phone  { left: 0; top: 242px; }
+.topo .server { left: 430px; top: 132px; width: 230px; border-color: var(--accent-line); }
+.topo .agent, .topo .tag {
+  position: absolute; right: 12px; top: 12px;
+  font-family: var(--font-mono); font-size: .34em; padding: 3px 9px; border-radius: 999px;
+}
+.topo .agent { color: var(--ok); border: 1px solid color-mix(in oklab, var(--ok) 50%, transparent);
+  background: color-mix(in oklab, var(--ok) 12%, var(--bg)); }
+.topo .tag { top: auto; bottom: 12px; color: var(--fg-dim); border: 1px solid var(--line); }
+.reveal ol.rows.topo-steps { font-size: .6em; }
+.reveal ol.rows.topo-steps:has(li.visible) > li:first-child { opacity: .5; }
+.topo .laptop { height: 108px; }
+
+/* hub: three clients on a bus line into the tailnet label, then the server.
+   Client boxes are a fixed 64px with 12px gaps, so the bus spans the first
+   to the last box centre (32px to 184px) and the middle box sits on the line. */
+.reach.hub { grid-template-columns: .8fr 1.3fr 1fr; }
+.reach.hub .clients { gap: 12px; }
+.reach.hub .clients .end {
+  position: relative; height: 64px; box-sizing: border-box; padding: 9px 18px;
+}
+.reach.hub .clients .end h4 { margin: 0 0 2px; font-size: .52em; }
+.reach.hub .clients .end p { font-size: .38em; }
+.reach.hub .clients .end::after {          /* stub from each client to the bus */
+  content: ''; position: absolute; left: 100%; width: 30px; top: 50%;
+  border-top: 2px solid var(--ok);
+}
+.reach.hub .gap { height: 216px; }
+.reach.hub .gap::before { left: 30px; }
+.reach.hub .gap::after {                    /* the bus */
+  content: ''; position: absolute; left: 29px; top: 31px; height: 154px;
+  border-left: 2px solid var(--ok);
+}
+.reach.hub .gap .wall { left: calc(50% + 15px); }
+.reach.hub > .end { height: 92px; box-sizing: border-box; }
+.reach.hub .gap .wall::before {             /* arrowhead: all clients point at the label */
+  content: ''; position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
+  border: 6px solid transparent; border-left: 9px solid var(--ok); border-right: 0;
+}
+/* own-arrow variant: no bus, no stubs; js/my-widgets.js draws one arrow per client */
+.reach.hub .clients .end::after, .reach.hub .gap::after, .reach.hub .gap .wall::before { display: none; }
+.reach.hub .gap::before { left: 50%; }
+.reach.hub { position: relative; }
+.reach.hub svg.fan { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.reach.hub svg.fan path { fill: none; stroke: var(--ok); stroke-width: 2; }
+.reach.hub svg.fan marker path { fill: var(--ok); stroke: none; }
+
+/* the tailnet as a small cloud (ok-green outline, matches --ok); any .reach */
+.reach .gap .wall.cloud {
+  width: 250px; height: 140px; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 26px 0 0; border: none; border-radius: 0; white-space: nowrap;
+  background: no-repeat center / 100% 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 140'%3E%3Cpath d='M62 124 C26 124 10 100 20 78 C28 60 46 54 60 58 C62 30 90 14 118 22 C134 6 170 8 184 32 C212 30 236 52 230 80 C246 92 240 124 210 124 Z' fill='%23142a24' stroke='%2334d399' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+  font-size: .36em;
+}
+.reach .gap .wall.cloud b { font-family: var(--font-sans); font-size: 1.55em; color: #fff; margin-bottom: 4px; }
+.reach .gap .wall.cloud:has(i) { padding-top: 18px; }
+.reach .gap .wall.cloud i { font-style: normal; color: var(--fg-dim); margin-top: 3px; }
+
+/* checkmark matrix: centred, bigger ticks */
+.reveal table.matrix.ticks td { text-align: center; font-size: 1.25em; font-weight: 700; }
+.reveal table.matrix.ticks thead th:not(:first-child) { text-align: center; }
+.reveal table.matrix.ticks tbody th small { font-weight: 400; color: var(--fg-faint); font-size: .75em; margin-left: 6px; }
+.reveal table.matrix.ticks thead th:not(:first-child) { width: 22%; }
+
+/* term-path: laptop -- tailnet (ssh / mosh) -- server holding the herdr panel */
+.reach.term-path { grid-template-columns: .85fr .9fr 1.25fr; margin: 0 0 22px; }
+.reach.term-path .gap .via {
+  position: absolute; left: 50%; top: calc(50% + 26px); transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: .34em; color: var(--fg-dim); white-space: nowrap;
+}
+.reach.term-path .end .herd { height: auto; margin-top: 10px; padding: 8px 14px; font-size: .38em; line-height: 1.7; }
+
+/* cc-panes: herdr on the server, one mini Claude Code window per session */
+.cc-panes {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;
+  font-family: var(--font-mono); font-size: .32em; line-height: 1.45; text-align: left;
+}
+.cc-panes .hd { grid-column: 1 / -1; color: var(--fg-faint); }
+.cc-panes .pane {
+  background: #0d0f12; border: 1px solid var(--line); border-top: 3px solid var(--fg-faint);
+  border-radius: 8px; padding: 6px 10px;
+}
+.cc-panes .pane .t { color: #d97757; font-weight: 700; }
+.cc-panes .pane .t .st { float: right; font-weight: 400; }
+.cc-panes .pane .r { color: #fff; }
+.cc-panes .pane .q { color: var(--fg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-panes .pane.b { border-top-color: var(--bad); }
+.cc-panes .pane.b .st, .cc-panes .pane.b .q { color: var(--bad); }
+.cc-panes .pane.w { border-top-color: var(--warn); }
+.cc-panes .pane.w .st { color: var(--warn); }
+.cc-panes .pane.i .st { color: var(--fg-faint); }
+
+/* herdr client panel inside the laptop box (same look as a .cc-panes pane) */
+.herd-client {
+  margin-top: 10px; padding: 6px 10px; text-align: left;
+  font-family: var(--font-mono); font-size: .32em; line-height: 1.45;
+  background: #0d0f12; border: 1px solid var(--line); border-top: 3px solid var(--ok); border-radius: 8px;
+}
+.herd-client .t { color: #fff; font-weight: 700; }
+.herd-client .t .st { float: right; font-weight: 400; color: var(--ok); }
+.herd-client .q { color: var(--fg-dim); }
+.herd-client .q b { color: var(--bad); font-weight: 400; }
+
+/* two-clients: laptop + phone into the tailnet, then one server (options 02, 03) */
+.reach.hub.two-clients { margin: 0 0 22px; }
+.reach.hub.two-clients .gap { height: 150px; }
+.reach.hub.two-clients > .end { height: auto; }
+.reach.term-path .gap { height: 170px; }
+.reach.term-path .gap .via { top: calc(50% + 74px); }
+
+/* to-cloud: laptop + phone straight into Anthropic's cloud (blue, no tailnet) */
+.reach.hub.to-cloud { grid-template-columns: .8fr 2.2fr; }
+.reach.hub.to-cloud .gap::before { display: none; }
+.reach.hub.to-cloud .gap .wall.cloud {
+  left: 50%; width: 340px; height: 170px; color: #5aa9ff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 140'%3E%3Cpath d='M62 124 C26 124 10 100 20 78 C28 60 46 54 60 58 C62 30 90 14 118 22 C134 6 170 8 184 32 C212 30 236 52 230 80 C246 92 240 124 210 124 Z' fill='%23142233' stroke='%235aa9ff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.reach.hub.to-cloud svg.fan path { stroke: #5aa9ff; }
+.reach.hub.to-cloud svg.fan marker path { fill: #5aa9ff; }
+.reveal ul.rows.cloud-steps { font-size: .6em; }
+
+/* ==========================================================================
+   Option 02 stack: Remote Control (green) & SSH (blue).
+   Status is shown with icons only, never with green/red text.
+   ========================================================================== */
+:root { --rc: #34d399; --ssh: #5aa9ff; }
+.rc-k { color: var(--rc) !important; }
+.ssh-k { color: var(--ssh) !important; }
+.reveal .slides section.rcssh > h2 { margin-bottom: 18px; }
+.rcssh .foot { font-size: .4em; color: var(--fg-faint); line-height: 1.55; text-align: left; margin: 12px 0 0; }
+.rcssh .foot.center { text-align: center; }
+.rcssh .foot code { color: var(--fg-dim); }
+
+/* slide 1: the two ways */
+.ways { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.way {
+  --c: var(--rc); text-align: left; background: var(--bg-elevated);
+  border: 1px solid var(--line); border-top: 4px solid var(--c);
+  border-radius: var(--radius); padding: 14px 20px 12px;
+}
+.way.ssh { --c: var(--ssh); }
+.way-hd { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.way-hd b { font-size: .7em; color: var(--c); }
+.way-hd span { font-size: .42em; color: var(--fg-dim); }
+.way-hd em { font-style: normal; color: #fff; font-weight: 600; }
+.lane { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 10px; }
+.lane .box {
+  font-size: .36em; padding: 7px 10px; border-radius: 8px; text-align: center;
+  border: 1px solid var(--line); background: var(--panel); color: var(--fg-dim);
+}
+.lane .box.host { border-color: color-mix(in oklab, var(--c) 60%, transparent); color: #fff; }
+.lane .hop {
+  position: relative; font-family: var(--font-mono); font-size: .32em; color: var(--c);
+  padding: 0 34px; text-align: center; white-space: nowrap;
+}
+.lane .hop::before, .lane .hop::after {
+  content: ''; position: absolute; top: 50%; width: 30px; border-top: 2px solid var(--c);
+}
+.lane .hop::before { left: 2px; }
+.lane .hop::after { right: 2px; }
+.lane .hop.relay { padding: 0 40px; }
+.lane .hop.relay::before { width: 34px; }
+.lane .hop.relay::after { width: 34px; }
+.lane .hop span {
+  display: inline-block; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--c) 50%, transparent);
+  background: color-mix(in oklab, var(--c) 14%, var(--bg));
+}
+.lane .hop.line span { border: none; background: none; padding: 0 2px 18px; }
+.fields { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; margin: 0; font-size: .4em; }
+.fields dt { color: var(--c); font-family: var(--font-mono); font-size: .9em; padding-top: 1px; }
+.fields dd { margin: 0; color: var(--fg-dim); line-height: 1.4; }
+.way .one { margin: 10px 0 0; font-size: .46em; color: #fff; font-weight: 600; }
+.onthego { margin-top: 16px; text-align: left; }
+.onthego .label-sm { margin-bottom: 6px; }
+.onthego .grid-3 { gap: 14px; }
+.onthego .grid-3 > div {
+  font-size: .36em; line-height: 1.45; color: var(--fg-dim); padding: 9px 12px;
+  border: 1px dashed var(--line); border-radius: 10px;
+}
+.onthego .grid-3 > div b { display: block; color: #fff; margin-bottom: 2px; }
+
+/* slide 2: switch-on table */
+.reveal table.matrix.rc-table { font-size: .5em; }
+.reveal table.matrix.rc-table th, .reveal table.matrix.rc-table td { padding: 11px 14px; vertical-align: top; }
+.reveal table.matrix.rc-table thead th { border-bottom: 2px solid var(--rc); }
+.reveal table.matrix.rc-table tr.star th, .reveal table.matrix.rc-table tr.star td {
+  background: color-mix(in oklab, var(--rc) 10%, var(--bg)); color: var(--fg);
+}
+.reveal table.matrix code { font-size: .92em; }
+
+/* slide 2b: flags + builder */
+.flags-wrap { display: grid; grid-template-columns: 1.08fr 1fr; gap: 22px; align-items: start; }
+.reveal table.matrix.flag-table { font-size: .4em; }
+.reveal table.matrix.flag-table td { padding: 7px 12px; vertical-align: top; color: var(--fg-dim); }
+.reveal table.matrix.flag-table td:first-child { white-space: nowrap; }
+.reveal table.matrix.flag-table b { color: #fff; font-weight: 600; }
+.flagb {
+  --accent: var(--rc); --accent-soft: color-mix(in oklab, var(--rc) 18%, transparent);
+  --accent-line: color-mix(in oklab, var(--rc) 45%, transparent);
+  text-align: left; background: var(--bg-elevated); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.flagb .ctl { display: grid; grid-template-columns: 150px 1fr; align-items: center; margin-bottom: 6px; }
+.flagb .ctl > span { font-family: var(--font-mono); font-size: .36em; color: var(--fg-dim); }
+.flagb .seg button { font-size: .36em; padding: 5px 10px; }
+.flagb .seg button:disabled { opacity: .35; cursor: default; }
+.flagb .terminal.fb-cmd { margin: 10px 0 8px; font-size: .36em; white-space: pre-wrap; min-height: 2.6em; }
+.fb-diagram { display: flex; flex-wrap: wrap; gap: 6px; min-height: 64px; align-content: flex-start; }
+.fb-diagram .folder {
+  border: 1px solid color-mix(in oklab, var(--rc) 45%, transparent); border-radius: 8px;
+  padding: 4px 8px 6px; font-family: var(--font-mono); font-size: .3em; color: var(--fg-dim);
+  background: color-mix(in oklab, var(--rc) 6%, var(--bg));
+}
+.fb-diagram .folder .dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; max-width: 220px; }
+.fb-diagram .folder.shared { flex: 1 1 100%; }
+.fb-diagram .folder.shared .dots { max-width: none; }
+.fb-diagram .dot {
+  display: block; width: 16px; height: 16px; border-radius: 4px;
+  background: var(--rc); opacity: .85; animation: fbpop .3s ease both;
+}
+.fb-diagram .more { font-size: 1em; color: var(--fg-faint); align-self: center; }
+@keyframes fbpop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: .85; } }
+.fb-note { font-size: .36em; color: var(--fg-dim); min-height: 1.4em; margin: 6px 0 8px; }
+.fb-note b { color: #fff; }
+.flagb .toolbar { justify-content: flex-start; margin: 0; }
+.flagb .toolbar .btn { font-size: .38em; padding: 8px 14px; }
+
+/* slide 3: client vs host */
+.reveal .slides section.rcssh > h2.headline { font-size: 1.12em; line-height: 1.25; }
+.split { display: grid; grid-template-columns: .85fr 1.15fr; gap: 18px; }
+.card.side { padding: 14px 18px; }
+.card.side h4 { color: var(--rc); margin-bottom: 2px; font-size: .62em; }
+.card.side .sub { font-size: .38em; color: var(--fg-faint); margin: 0 0 8px; }
+.card.side ul { margin: 0; padding-left: 1.1em; font-size: .44em; line-height: 1.55; color: var(--fg-dim); }
+.card.side.host { border-color: color-mix(in oklab, var(--rc) 45%, var(--line)); }
+.reveal table.mini { font-size: .4em; border-collapse: collapse; width: 100%; }
+.reveal table.mini th, .reveal table.mini td {
+  border: none; border-top: 1px solid var(--line-soft); padding: 7px 8px; vertical-align: top; text-align: left;
+}
+.reveal table.mini tr:first-child th, .reveal table.mini tr:first-child td { border-top: none; }
+.reveal table.mini th { color: #fff; font-weight: 600; width: 34%; }
+.reveal table.mini td { color: var(--fg-dim); }
+.where {
+  display: grid; grid-template-columns: auto 1fr 1.4fr; gap: 16px; align-items: center;
+  margin-top: 14px; font-size: .42em; color: var(--fg-dim); text-align: left;
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px;
+}
+.where .q { color: var(--rc); font-family: var(--font-mono); }
+.where b { color: #fff; margin-right: 6px; }
+
+/* slide 3b: rcClose widget */
+.rcdemo { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0; align-items: center; margin-top: 10px; }
+.rcdemo .dev {
+  text-align: left; background: var(--bg-elevated); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 16px 20px; transition: opacity .4s ease, filter .4s ease, border-color .4s ease;
+}
+.rcdemo .dev b { display: block; font-size: .62em; color: #fff; }
+.rcdemo .dev span { display: block; font-size: .38em; color: var(--fg-dim); margin: 4px 0 8px; }
+.rcdemo .dev i {
+  font-style: normal; font-family: var(--font-mono); font-size: .34em; padding: 3px 10px;
+  border-radius: 999px; border: 1px solid var(--line); color: var(--fg-dim);
+}
+.rcdemo .dev.host { border-color: color-mix(in oklab, var(--rc) 55%, transparent); }
+.rcdemo .dev.off { opacity: .35; filter: grayscale(1); }
+.rcdemo .link { position: relative; height: 60px; }
+.rcdemo .link::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px dashed var(--rc);
+  transition: opacity .4s ease;
+}
+.rcdemo .link.cut-l::before { left: 50%; }
+.rcdemo .link.cut-r::before { right: 50%; }
+.rcdemo .link.cut-l.cut-r::before { opacity: 0; }
+.rcdemo .relay {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-family: var(--font-mono); font-size: .34em; color: var(--rc); white-space: nowrap;
+  background: color-mix(in oklab, var(--rc) 14%, var(--bg)); border: 1px solid color-mix(in oklab, var(--rc) 50%, transparent);
+  border-radius: 999px; padding: 6px 14px;
+}
+.rcdemo .session {
+  grid-column: 1 / -1; margin-top: 22px; text-align: left; background: #0d0f12;
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
+  transition: opacity .4s ease;
+}
+.rcdemo .session .sh { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .4em; color: #fff; }
+.rcdemo .session .bar { display: block; height: 8px; margin-top: 10px; background: var(--panel); border-radius: 99px; overflow: hidden; }
+.rcdemo .session .bar span { display: block; height: 100%; width: 0; background: var(--rc); border-radius: 99px; }
+.rcdemo .session.paused, .rcdemo .session.stopped { opacity: .45; }
+.rc-verdict { min-height: 2.6em; margin-top: 16px; font-size: .5em; color: var(--fg-dim); text-align: center; }
+.rc-verdict b { color: #fff; }
+
+/* slide 4: SSH table */
+.reveal table.matrix.ssh-table { font-size: .42em; }
+.reveal table.matrix.ssh-table th, .reveal table.matrix.ssh-table td { padding: 9px 12px; vertical-align: top; }
+.reveal table.matrix.ssh-table thead th { border-bottom: 2px solid var(--ssh); }
+.reveal table.matrix.ssh-table tbody th small { display: block; font-weight: 400; color: var(--fg-faint); }
+.reveal table.matrix.ssh-table tr.hl td, .reveal table.matrix.ssh-table tr.hl th {
+  background: color-mix(in oklab, var(--ssh) 10%, var(--bg)); color: var(--fg);
+}
+.herdr-why { margin-top: 18px; }
+.herdr-why .card h4 { color: var(--ssh); font-size: .56em; }
+.herdr-why .card p { font-size: .46em; }
+.rcssh .terminal { font-size: .42em; }
+
+/* slide 5 */
+.reveal table.matrix.pick-table { font-size: .46em; }
+.reveal table.matrix.pick-table td { vertical-align: top; color: var(--fg-dim); padding: 11px 14px; }
+.reveal table.matrix.pick-table thead th.rc-h { border-bottom: 3px solid var(--rc); }
+.reveal table.matrix.pick-table thead th.ssh-h { border-bottom: 3px solid var(--ssh); }
+.reveal table.matrix.pick-table thead small { font-weight: 400; color: var(--fg-faint); margin-left: 8px; }
+.rcssh blockquote.pull { margin-top: 18px; }
+.combo { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; align-items: start; }
+.combo ol.rows { font-size: .5em; }
+.combo .code-window { margin: 0; }
+.combo ul.rows.result { font-size: .48em; }
+.rcssh blockquote.pull.hero p { font-size: .82em; }
+
+/* quick reference */
+.reveal table.matrix.quickref { font-size: .5em; }
+.reveal table.matrix.quickref td { color: var(--fg); }
+.reveal table.matrix.quickref small { font-weight: 400; color: var(--fg-faint); margin-left: 6px; }
+.quickref .tag, .rcssh .tag {
+  display: inline-block; font-family: var(--font-mono); font-size: .75em; padding: 1px 7px; margin-right: 8px;
+  border-radius: 6px; border: 1px solid currentColor;
+}
+.quickref .tag.rc { color: var(--rc); }
+.quickref .tag.ssh { color: var(--ssh); }
+
+html.print-pdf .rcdemo *, html.print-pdf .fb-diagram .dot { transition: none; animation: none; }
+
+.rcssh table code { white-space: nowrap; }
+.lane { grid-template-columns: 1.2fr auto 1fr; }
+.lane .box { white-space: nowrap; }

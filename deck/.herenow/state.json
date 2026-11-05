@@ -1,0 +1,9 @@
+{
+  "publishes": {
+    "crisp-torque-s7zy": {
+      "siteUrl": "https://crisp-torque-s7zy.here.now/",
+      "versionId": "01M59TCGB0NR0NE0EXJR7ZAB23",
+      "path": "/private/tmp/claude-501/deck-publish"
+    }
+  }
+}

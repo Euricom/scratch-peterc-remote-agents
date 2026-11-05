@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remote agent access</title>
+
+  <link rel="stylesheet" href="node_modules/reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/deck.css">
+  <link rel="stylesheet" href="css/widgets.css">
+  <link rel="stylesheet" href="css/talk.css">
+
+  <script>
+    /* The deck's parts, in order. `id` must match data-part on each <section>.
+       Must be set before js/chrome.js loads. */
+    window.DECK_PARTS = [
+      { id: 'intro', label: 'Why', accent: '#ff8a3d', accent2: '#ffb27a' },
+      { id: 'connect', label: 'Connectivity', accent: '#2dd4bf', accent2: '#5eead4' },
+      { id: 'options', label: 'Four options', accent: '#ff8a3d', accent2: '#5aa9ff' },
+      { id: 'choose', label: 'Choosing', accent: '#5aa9ff', accent2: '#ff8a3d' }
+    ];
+  </script>
+</head>
+<body>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ==================================================================
+         WHY
+         ================================================================== -->
+
+    <section data-part="intro" data-title="Title" class="title-slide" data-transition="fade">
+      <span class="eyebrow">$ claude --remote-control</span>
+      <h1>Remote agent access</h1>
+      <h2>Keep your coding agents running, and reach them from anywhere</h2>
+      <div class="meta">
+        <span class="chip"><b>1</b> network layer</span>
+        <span class="chip"><b>4</b> setups</span>
+        <span class="chip">Peter Cosemans &middot; Euricom</span>
+      </div>
+      <aside class="notes">
+        Welcome. Today: how to keep Claude Code working while you are away from
+        your desk, and four concrete setups to reach it, starting with the
+        network layer that makes the self-hosted ones possible.
+        Press S for this window, ? for the keys.
+      </aside>
+    </section>
+
+    <section data-part="intro" data-title="Agents run for hours">
+      <h2>Agents work for hours but need you for seconds</h2>
+      <div class="grid-3">
+        <div class="card fragment fade-up" data-fragment-index="1">
+          <h4>They run for hours</h4>
+          <p>A long refactor shouldn't stop when you <strong>close the laptop</strong>.</p>
+        </div>
+        <div class="card fragment fade-up" data-fragment-index="2">
+          <h4>They need you briefly</h4>
+          <p>A permission prompt or a question. <strong>Answer it from your phone.</strong></p>
+        </div>
+        <div class="card fragment fade-up" data-fragment-index="3">
+          <h4>Many in parallel</h4>
+          <p>Several sessions at once. <strong>You supervise, they work.</strong></p>
+        </div>
+      </div>
+      <blockquote class="pull fragment fade-up" data-fragment-index="4">
+        <p>Running example: you work on your laptop, Claude is halfway through an
+          <code>api-refactor</code>. It's 17:30: close the lid, drive home.
+          The agent has to keep running on the <strong>dev server</strong> at home or the office.</p>
+      </blockquote>
+      <aside class="notes">
+        The shift: from pairing with an agent at your desk to supervising agents
+        that keep running. You check in, unblock, review, from wherever you are.
+        Introduce the running example and come back to it on every option:
+        you do your main work on the laptop. Claude Code is mid-refactor, you
+        want to pack the laptop and drive home, and continue from the couch
+        (laptop again, or phone). Closing the lid is sleep: an agent running ON
+        the laptop stops. So every option answers one question: where does the
+        session live while the laptop is in the car? The answer for 01 to 03: on
+        the dev server at home or at the office that stays on.
+        The laptop (and phone) only connect to it.
+        The scenario is illustrative.
+      </aside>
+    </section>
+
+    <!-- ==================================================================
+         CONNECTIVITY
+         ================================================================== -->
+
+    <section data-part="connect" data-title="Part 1 — Connectivity" class="part-divider" data-transition="zoom">
+      <div class="kicker">Part one</div>
+      <h1>Connectivity</h1>
+      <p class="sub">Reaching your machine from anywhere</p>
+      <div class="rule"></div>
+      <aside class="notes">
+        Before any tool: once you're home, can your laptop or phone even reach the machine the agent runs on?
+      </aside>
+    </section>
+
+    <section data-part="connect" data-title="More than one laptop">
+      <h2>One laptop isn't enough: the agent needs a server</h2>
+      <div class="topo-wrap">
+        <div class="topo">
+          <!-- links: phone-laptop appears at 1 and goes at 3; the others appear at 2 and 3 -->
+          <div class="fragment fade-in" data-fragment-index="1">
+            <svg class="link fragment fade-out" data-fragment-index="3" viewBox="0 0 660 360" aria-hidden="true">
+              <line x1="120" y1="232" x2="120" y2="118"/></svg>
+          </div>
+          <svg class="link fragment fade-in" data-fragment-index="2" viewBox="0 0 660 360" aria-hidden="true">
+            <line x1="240" y1="70" x2="430" y2="160"/></svg>
+          <svg class="link fragment fade-in" data-fragment-index="3" viewBox="0 0 660 360" aria-hidden="true">
+            <line x1="240" y1="290" x2="430" y2="200"/></svg>
+
+          <div class="dev laptop">
+            <h4>Laptop</h4><p>where you work</p>
+            <span class="agent fragment fade-out" data-fragment-index="2">&#9679; agent</span>
+            <span class="tag fragment fade-in" data-fragment-index="3">lid closed: fine</span>
+          </div>
+          <div class="dev phone fragment fade-up" data-fragment-index="1">
+            <h4>Phone</h4><p>check in, approve</p>
+          </div>
+          <div class="dev server fragment fade-up" data-fragment-index="2">
+            <h4>Server</h4><p>at home, the office or in the cloud</p>
+            <span class="agent">&#9679; agent</span>
+          </div>
+        </div>
+        <ol class="rows topo-steps">
+          <li><strong>Laptop only.</strong> Close the lid and the agent stops.</li>
+          <li class="fragment fade-in-then-semi-out" data-fragment-index="1"><strong>+ phone.</strong> Approve from anywhere, but the laptop must stay open.</li>
+          <li class="fragment fade-in-then-semi-out" data-fragment-index="2"><strong>+ server.</strong> The agent moves to a server that stays on: at home, the office or in the cloud.</li>
+          <li class="fragment fade-in-then-semi-out" data-fragment-index="3"><strong>Phone &rarr; server.</strong> Close the lid, drive home, keep steering.</li>
+        </ol>
+      </div>
+      <aside class="notes">
+        Arrow through four steps. Start: everything on the laptop, the way most
+        of us work today. Closing the lid counts as sleep, so the agent stops.
+        Step 1: add the phone (e.g. Remote Control). Nice, but the phone is only
+        a window onto the laptop, so the laptop still can't go in the bag.
+        Step 2: add a server; the agent moves there. Keep it open: your own box
+        at home or the office, or a cloud one (option 04).
+        The laptop becomes a client.
+        Step 3: the phone talks to the server too. Now the laptop can close and
+        you can drive home. Next slide: the catch is reaching that server.
+      </aside>
+    </section>
+
+    <section data-part="connect" data-title="Unreachable by default">
+      <h2>Your server machine is unreachable by default</h2>
+      <div class="reach">
+        <div class="end">
+          <h4>Laptop</h4>
+          <p>Office, customer Wi-Fi, home</p>
+        </div>
+        <div class="gap"><span class="wall">NAT &middot; firewall &middot; no public IP</span></div>
+        <div class="end">
+          <h4>Dev server</h4>
+          <p>Server at home or the office: <code>dev-server</code></p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card bad fragment fade-up" data-fragment-index="1">
+          <h4>Port forwarding</h4>
+          <p>Fragile: breaks when the ISP changes your IP, and every opened port faces the whole internet.</p>
+        </div>
+        <div class="card bad fragment fade-up" data-fragment-index="2">
+          <h4>Public SSH</h4>
+          <p>Bots start scanning within minutes. You're one weak key or bad config away from a breach.</p>
+        </div>
+      </div>
+      <blockquote class="pull fragment fade-up" data-fragment-index="3">
+        <p>What we want: a private network that follows us around, with nothing exposed.</p>
+      </blockquote>
+      <aside class="notes">
+        Every self-hosted option that follows depends on this. Your machine sits
+        behind a home router or corporate NAT. Opening ports to the internet is
+        the classic answer, and the wrong one.
+        Exception to mention now: the Claude-hosted option (04) runs in
+        Anthropic's cloud, so it doesn't need this.
+      </aside>
+    </section>
+
+    <section>
+      <section data-part="connect" data-title="Tailscale">
+        <h2>Tailscale puts all your devices on one private network</h2>
+        <div class="reach tailnet hub" style="margin-bottom:22px">
+          <div class="clients">
+            <div class="end"><h4>Laptop</h4><p>office, customer, home</p></div>
+            <div class="end"><h4>Desktop</h4><p>at home</p></div>
+            <div class="end"><h4>Phone</h4><p>anywhere</p></div>
+          </div>
+          <div class="gap"><span class="wall cloud"><b>Tailscale</b>WireGuard, peer to peer<i>or a private VPN</i></span></div>
+          <div class="end"><h4>Dev server</h4><p>reachable as <code>dev-server</code> via MagicDNS</p></div>
+        </div>
+        <div class="row top">
+          <div class="col">
+            <div class="terminal"><span class="p">$</span> curl -fsSL https://tailscale.com/install.sh | sh
+<span class="p">$</span> sudo tailscale up
+<span class="p">$</span> ssh me@dev-server        <span class="dim"># from anywhere</span></div>
+          </div>
+          <div class="col">
+            <ul class="rows" style="font-size:.78em">
+              <li><strong>No open ports.</strong> NAT traversal, nothing exposed</li>
+              <li><strong>MagicDNS.</strong> Machines by name: <code>dev-server</code>, <code>winpc</code></li>
+              <li><strong>Serve.</strong> HTTPS on <code>*.ts.net</code> for a local port</li>
+              <li><strong>Every platform.</strong> Windows, macOS, Linux, iOS, Android</li>
+              <li><strong>Plain OpenSSH.</strong> Leave Tailscale SSH off; add <code>ServerAliveInterval 30</code></li>
+            </ul>
+          </div>
+        </div>
+        <aside class="notes">
+          Tailscale builds a WireGuard mesh, your "tailnet". Every device gets a
+          stable private IP (100.x) and a name. Install, log in with SSO, done.
+          Free for personal use.
+          Tailscale Serve matters later: t3code uses it to publish its local
+          port 3773 as https://dev-server.&lt;tailnet&gt;.ts.net, tailnet only.
+          A stable IP also changes the mosh story (option 01, herdr + mosh).
+          Tailscale SSH is off by default and tempting to turn on. Don't: in check
+          mode it waits for a browser login that Cursor and VS Code remote sessions
+          never show, so they hang. Plain sshd over the tailnet works for everything.
+          Already on? "sudo tailscale set --ssh=false" on the server (drops its sessions).
+          ServerAliveInterval 30 in ~/.ssh/config keeps idle sessions alive.
+        </aside>
+      </section>
+
+      <section data-part="connect" data-title="SSH, mosh and herdr">
+        <h2>mosh fixes the connection, herdr keeps the sessions</h2>
+        <table class="matrix ticks" style="font-size:.66em">
+          <thead><tr><th style="width:34%"></th><th>Pure SSH</th><th>mosh</th><th>mosh + herdr</th></tr></thead>
+          <tbody>
+            <tr><th>Switch network <small>stable tailnet IP</small></th><td class="win">&#10003;</td><td class="win">&#10003;</td><td class="win">&#10003;</td></tr>
+            <tr><th>Lid closed, long outage</th><td class="lose">&#10007;</td><td class="win">&#10003;</td><td class="win">&#10003;</td></tr>
+            <tr><th>Instant typing on laggy 4G</th><td class="lose">&#10007;</td><td class="win">&#10003;</td><td class="win">&#10003;</td></tr>
+            <tr><th>Ctrl-C on runaway output</th><td class="lose">&#10007;</td><td class="win">&#10003;</td><td class="win">&#10003;</td></tr>
+            <tr><th>Reattach after closing the terminal</th><td class="lose">&#10007;</td><td class="lose">&#10007;</td><td class="win">&#10003;</td></tr>
+            <tr><th>See which agent needs you</th><td class="lose">&#10007;</td><td class="lose">&#10007;</td><td class="win">&#10003;</td></tr>
+          </tbody>
+        </table>
+        <div class="terminal" style="margin-top:16px"><span class="p">$</span> mosh me@dev-server -- herdr      <span class="dim"># SSH logs in, mosh carries it, herdr keeps the agents</span></div>
+        <aside class="notes">
+          Source: mosh.org. The mosh client logs in via SSH (same keys, same
+          config), starts mosh-server and switches to UDP. Datagrams are
+          encrypted and authenticated with AES-128 in OCB3 mode. It handles packet
+          loss and adapts the frame rate to the network; it doesn't fill network
+          buffers, so Ctrl-C always halts a runaway process. No root needed.
+          Limits: it syncs only the visible screen, so use tmux for scrollback and
+          to reattach after closing the client. Over Tailscale the UDP ports need
+          nothing on the router.
+          herdr (github.com/ogulcancelik/herdr) runs on the server: panes survive
+          the client going away, "herdr" reattaches, and each pane is marked
+          working, blocked or idle. mosh + tmux would also tick "reattach", but
+          not "which agent needs you".
+          Pure SSH ticks "switch network" only thanks to Tailscale's stable IP.
+          Full comparison as a live demo after option 01.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ==================================================================
+         FOUR OPTIONS
+         ================================================================== -->
+
+    <section data-part="options" data-title="Part 2 — Four options" class="part-divider" data-transition="zoom">
+      <div class="kicker">Part two</div>
+      <h1>Four options</h1>
+      <p class="sub">From your hardware to Claude's</p>
+      <div class="rule"></div>
+      <aside class="notes">
+        Four setups, ordered from "you own the machine" to "Claude owns the
+        machine". For each: what it is, how it's set up, where it shines or hurts.
+      </aside>
+    </section>
+
+    <section data-part="options" data-title="The four options">
+      <h2>Four setups, from your machine to Claude's</h2>
+      <div class="chain" style="--n:4">
+        <div class="node fragment fade-up" data-fragment-index="1"><div class="cmd">01</div><div class="what">herdr + mosh + Claude Code TUI</div><div class="out">terminal</div><div class="who">your server</div></div>
+        <div class="node fragment fade-up" data-fragment-index="2"><div class="cmd">02</div><div class="what">Claude App: Remote Control + SSH</div><div class="out">Claude app / terminal</div><div class="who">your laptop or server</div></div>
+        <div class="node fragment fade-up" data-fragment-index="3"><div class="cmd">03</div><div class="what">t3code on Linux</div><div class="out">T3 Code app / T3 Code Service</div><div class="who">your server</div></div>
+        <div class="node cloud fragment fade-up" data-fragment-index="4"><div class="cmd">04</div><div class="what">Claude App, hosted by Claude</div><div class="out">Claude app</div><div class="who">Anthropic</div></div>
+      </div>
+      <div class="spectrum"><span>&larr; more control</span><span>less control &amp; less to maintain &rarr;</span></div>
+      <aside class="notes">
+        Bottom line of each card: where the agent actually runs. Middle line:
+        what you hold in your hand. 01 to 03 run on hardware you own; 04 runs on
+        Anthropic's.
+      </aside>
+    </section>
+
+    <!-- ---- 01 ------------------------------------------------------- -->
+    <section>
+      <section data-part="options" data-title="01 herdr + mosh + Claude Code TUI" class="option">
+        <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="01 herdr"></div>
+        <div class="opt-kicker">Option 01 &middot; self-hosted &middot; TUI</div>
+        <h2>herdr manages every Claude session on your server</h2>
+        <div class="reach tailnet term-path">
+          <div class="end">
+            <h4>Laptop</h4>
+            <p>Any terminal: Windows Terminal, iTerm, Ghostty</p>
+            <div class="herd-client">
+              <div class="t">herdr <span class="st">&#9679; dev-server</span></div>
+              <div class="q">4 sessions &middot; <b>1 blocked</b></div>
+            </div>
+          </div>
+          <div class="gap">
+            <span class="wall cloud"><b>Tailscale</b>WireGuard, peer to peer<i>or a private VPN</i></span>
+            <span class="via">ssh &middot; or mosh</span>
+          </div>
+          <div class="end">
+            <h4>Dev server</h4>
+            <div class="cc-panes">
+              <div class="hd">herdr &middot; 4 Claude Code sessions</div>
+              <div class="pane b"><div class="t">&#10035; claude <span class="st">&#9679; blocked</span></div><div class="r">api-refactor</div><div class="q">Allow edit to auth.ts?</div></div>
+              <div class="pane w"><div class="t">&#10035; claude <span class="st">&#9680; working</span></div><div class="r">docs-update</div><div class="q">Writing README.md&hellip;</div></div>
+              <div class="pane w"><div class="t">&#10035; claude <span class="st">&#9680; working</span></div><div class="r">flaky-tests</div><div class="q">Running npm test&hellip;</div></div>
+              <div class="pane i"><div class="t">&#10035; claude <span class="st">&#9675; idle</span></div><div class="r">release-notes</div><div class="q">&gt; _</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="opt">
+          <div class="terminal"><span class="dim"># ssh</span>
+<span class="p">$</span> ssh dev-server
+<span class="p">$</span> mosh dev-server              <span class="dim"># optional: a better SSH</span>
+
+<span class="dim"># herdr</span>
+<span class="p">$</span> herdr --remote dev-server    <span class="dim"># herdr reconnects by itself</span>
+<span class="p">$</span> mosh dev-server -- herdr     <span class="dim"># or: mosh for laggy links</span></div>
+          <div class="grid-2">
+            <div class="card good pad-sm"><h4>Good</h4><ul>
+              <li>ssh &amp; terminal</li>
+              <li>Claude Code TUI</li>
+              <li>mosh for better connectivity</li></ul></div>
+            <div class="card bad pad-sm"><h4>Watch out</h4><ul>
+              <li>Low level</li>
+              <li>It's the terminal</li>
+              <li>Less overview</li></ul></div>
+          </div>
+        </div>
+        <aside class="notes">
+          herdr is the tool that holds it all together: every Claude Code session
+          runs in its own herdr pane on the server, herdr shows which one is
+          working, blocked or idle, and it keeps them running when you disconnect.
+          Three parts: a terminal on the laptop (or phone), the tailnet in the
+          middle, and the server where every Claude Code session runs inside herdr.
+          SSH alone works; mosh is the optional upgrade. Install herdr with
+          "curl -fsSL https://herdr.dev/install.sh | sh", then
+          "herdr integration install claude" for richer Claude status.
+          Think tmux, but agent-aware. Source: github.com/ogulcancelik/herdr
+          (Apache 2.0, Rust). Install also via brew install herdr. ctrl+b q
+          detaches, running herdr again reattaches.
+          Two ways to attach (source: herdr.dev/docs/connecting-machines):
+          "herdr --remote dev-server" runs the herdr client on the laptop and talks
+          to the herdr server on dev-server over SSH. It retries by itself after a
+          network drop, sleep or SSH failure (backoff up to 2 min), shows the last
+          state dimmed meanwhile, and can keep several machines in one combined
+          agent list. mosh can't help here: it only carries an interactive
+          terminal, and herdr's remote link is SSH only.
+          "mosh dev-server -- herdr" runs herdr on the server inside a mosh
+          session: you get mosh's local echo on laggy links, but one machine per
+          window.
+          `herdr integration install claude` gives richer status for Claude Code
+          (from the bitdoze write-up). Mobile: the bitdoze article says the Moshi
+          iOS terminal has native herdr support; I haven't verified that myself.
+          The status panel is illustrative, not a capture.
+          mosh (mosh.org) replaces SSH for the interactive session: UDP, roams
+          between networks, local echo. It syncs only the visible screen, so
+          herdr (or tmux) provides scrollback and reattach. Needs UDP 60000-61000
+          and mosh-server on the server's PATH; over Tailscale nothing is opened
+          on the router. Honest note: Tailscale already gives SSH a stable IP, so
+          what mosh adds is surviving sleep and long outages, plus local echo.
+          No herdr? "mosh dev-server -- tmux new -A -s main" then "claude" works too,
+          you just lose the per-agent status.
+          Phone clients: Blink Shell (iOS), Termux (Android).
+          Running example: you close the lid at the office, open it at home,
+          reattach, and api-refactor is the one marked blocked.
+          Press down for the survival demo.
+          [Add the herdr config used in the demo.]
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="What survives a dropped connection" class="option" data-interactive>
+        <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="01 herdr"></div>
+        <h2>Only a server-side session survives closing the terminal</h2>
+        <div class="survive" data-widget="survive"
+             data-verdicts="Tailscale's stable IP already rescues plain SSH here.|A closed laptop stops answering, so <b>TCP gives up</b>. mosh doesn't care.|Persistence lives <b>on the server</b>: herdr.">
+          <span></span>
+          <div class="hd" data-event="wifi"><b>Office &rarr; home Wi-Fi</b>IP changes</div>
+          <div class="hd" data-event="sleep"><b>Lid closed</b>30-min drive home</div>
+          <div class="hd" data-event="close"><b>Close the terminal</b>reopen at home</div>
+          <div class="who" data-out="bad|bad|bad">SSH<small>public IP</small></div>
+          <div class="who" data-out="ok|bad|bad">SSH<small>over Tailscale</small></div>
+          <div class="who" data-out="ok|ok|lost">mosh<small>no herdr</small></div>
+          <div class="who" data-out="ok|ok|ok">herdr<small>reconnects itself</small></div>
+        </div>
+        <div class="survive-verdict" data-role="verdict">&nbsp;</div>
+        <div class="toolbar" style="margin-top:10px;margin-bottom:0">
+          <button class="btn primary" data-role="run">&#9889; Next event <span class="kbd">B</span></button>
+          <button class="btn" data-role="reset">Reset <span class="kbd">R</span></button>
+          <span class="label">event <b data-role="event-count">0/3</b></span>
+        </div>
+        <aside class="notes">
+          Before pressing: "watch the Claude session in each row, not the
+          connection". Each column starts from a healthy session. One press per event.
+          Source: my own mosh/SSH comparison notes (mush.md), not a benchmark.
+          Wi-Fi switch: public-IP SSH dies; over Tailscale the IP stays the same.
+          Sleep: sshd has no timeout of its own, but kernel TCP ends a connection
+          after about 15 min with output pending (an agent always has output
+          pending), about 2 h when idle. When SSH dies, Claude gets SIGHUP and dies.
+          mosh-server has no timeout by default (MOSH_SERVER_NETWORK_TMOUT unset).
+          Close the app: plain mosh keeps the agent running but you can't
+          reattach: alive, unreachable. herdr lets you reattach.
+          Timeouts are configurable: ClientAliveInterval, ServerAliveInterval,
+          MOSH_SERVER_NETWORK_TMOUT.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ---- 02 ------------------------------------------------------- -->
+    <!-- Remote Control & SSH. Green (.rc) = Remote Control, blue (.ssh) = SSH.
+         Status uses icons only (✅ keeps working, ❌ stops, ⏸ pauses), never
+         green/red, so it doesn't clash with the two category accents. -->
+    <section>
+      <section data-part="options" data-title="02 Two ways to leave your desk" class="option rcssh">
+        <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="02 Claude app"></div>
+        <div class="opt-kicker">Option 02 &middot; Claude app + CLI &middot; Remote Control &amp; SSH</div>
+        <h2>Two ways to leave your desk</h2>
+        <div class="ways">
+          <div class="way rc">
+            <div class="way-hd"><b>Remote Control</b><span>changes <em>how you reach</em> a session</span></div>
+            <div class="lane">
+              <span class="box">📱 phone &middot; web &middot; Desktop</span>
+              <span class="hop relay"><span>☁ Anthropic relay</span></span>
+              <span class="box host">💻 your laptop</span>
+            </div>
+            <dl class="fields">
+              <dt>Host</dt><dd>Where you started it, usually your own laptop</dd>
+              <dt>Client</dt><dd>Phone, browser or another Desktop app: a window into the session</dd>
+              <dt>Transport</dt><dd>Outbound HTTPS via the Anthropic API. No inbound ports.</dd>
+            </dl>
+            <p class="one">&ldquo;The agent stays home, you take the remote&rdquo;</p>
+          </div>
+          <div class="way ssh">
+            <div class="way-hd"><b>SSH</b><span>changes <em>where</em> the session runs</span></div>
+            <div class="lane">
+              <span class="box">💻 terminal or Desktop app</span>
+              <span class="hop line"><span>ssh</span></span>
+              <span class="box host">🖥 devbox / VM / server</span>
+            </div>
+            <dl class="fields">
+              <dt>Host</dt><dd>A remote machine: devbox, VM or server</dd>
+              <dt>Client</dt><dd>A terminal or the Desktop app on your laptop</dd>
+              <dt>Transport</dt><dd>A direct SSH connection</dd>
+            </dl>
+            <p class="one">&ldquo;Move the agent to a machine that never sleeps&rdquo;</p>
+          </div>
+        </div>
+        <div class="onthego">
+          <div class="label-sm">Reaching them on the go</div>
+          <div class="grid-3">
+            <div><b>📱 Phone</b>Claude app &rarr; Code tab. Online sessions show 💻 with a green dot. Push on &ldquo;done&rdquo; or &ldquo;needs a decision&rdquo;.</div>
+            <div><b>💻 Another computer</b>claude.ai/code, or any Desktop app on the same account. Desktop on B steers a session on A.</div>
+            <div><b>🔗 SSH sessions too</b>Turn on Remote Control and SSH sessions show up in the Claude app as well.</div>
+          </div>
+        </div>
+        <aside class="notes">
+          This option replaces the old "Claude App on Windows" slide. Press down for
+          the full walk-through; this top slide works on its own if time is short.
+          Storyline: Remote Control decides HOW you reach a session, SSH decides WHERE
+          it runs, and the payoff (last slides of this stack) is combining the two.
+          Two words for the whole stack: host = where the claude process runs and the
+          work happens; client = what you look at. Closing the client is harmless,
+          closing the host stops the work.
+          Start with the two cards: "there are exactly two ways". Then go quickly
+          through the bottom strip.
+          Phone: Claude app, Code tab. You can also scan the terminal's QR code or open
+          claude.ai/code. Push notifications: /config, "Push when Claude decides" and
+          "Push when actions required". Photos or files you attach land on the host as
+          @ references.
+          Another computer: Remote Control sessions appear in claude.ai/code and in
+          every Claude Desktop app signed in to the same account.
+          End on the chain-link item: they aren't either/or, you can combine them.
+          That's the payoff at the end of this stack, whether the SSH session comes from
+          the Desktop app, plain ssh or herdr.
+          Out of scope here: cloud sessions, /teleport, routines. That's option 04.
+          Sources: code.claude.com/docs/en/remote-control, Desktop docs (SSH sessions),
+          herdr.dev/docs/connecting-machines. Facts checked against the docs on 2026-11-04.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Remote Control: 4 ways to switch it on" class="option rcssh">
+        <div class="opt-kicker rc-k">Remote Control &middot; switch it on</div>
+        <h2>Remote Control: 4 ways to switch it on</h2>
+        <table class="matrix rc-table">
+          <thead><tr><th style="width:17%">Mode</th><th style="width:24%">CLI</th><th style="width:27%">Desktop app</th><th>When to use it</th></tr></thead>
+          <tbody>
+            <tr><th>Server mode</th><td><code>claude remote-control</code></td><td>❌ not available*</td><td>A dedicated agent host: many sessions (32 by default), start new ones from your phone. No local typing.</td></tr>
+            <tr><th>Interactive session</th><td><code>claude --rc "My Project"</code></td><td>&mdash; every Desktop session is already interactive</td><td>A normal session you can also reach remotely. Type in both places.</td></tr>
+            <tr><th>From an existing session</th><td><code>/rc</code></td><td><code>/rc</code> or the Remote Control switch in the Environment card</td><td>&ldquo;I'm halfway through, now I have to leave.&rdquo; Keeps the history.</td></tr>
+            <tr class="star"><th>⭐ Always on</th><td><code>/config</code> &rarr; Enable Remote Control for all sessions</td><td>Settings &rarr; Code &rarr; Connect new sessions to Remote Control</td><td><strong>Easiest:</strong> switch it on once, every new session shows up on your phone. Key to the combo at the end.</td></tr>
+          </tbody>
+        </table>
+        <p class="foot">* Desktop only uses <code>/remote-control</code>. For server mode run <code>claude remote-control</code> in a terminal (Desktop's Terminal pane works); it stops when that terminal closes.<br>
+          Needs a claude.ai login (Pro / Max / Ultra / Team / Enterprise). API keys, Bedrock, Vertex / Foundry and custom gateways aren't supported. Team / Enterprise: an Owner enables it first.</p>
+        <aside class="notes">
+          Keep this one light; server-mode flags are on the next slide down.
+          "Always on" is "remoteControlAtStartup": true in ~/.claude/settings.json. A
+          checked-in project .claude/settings.json can only turn it OFF, so a repository
+          can't switch it on for everyone.
+          Outside server mode, each process or Desktop session gets one remote session.
+          In server mode, press spacebar to show a QR code for your phone.
+          Running example: halfway through api-refactor at 17:30, type /rc and the
+          session follows you to the phone.
+          Source: code.claude.com/docs/en/remote-control, checked 2026-11-04.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Server mode flags" class="option rcssh" data-interactive>
+        <div class="opt-kicker rc-k">Remote Control &middot; server mode</div>
+        <h2>Server mode: the flags you'll actually use</h2>
+        <div class="flags-wrap">
+          <table class="matrix flag-table">
+            <tbody>
+              <tr><td><code>--name "My Project"</code></td><td>Title in the session list</td></tr>
+              <tr><td><code>--spawn &lt;mode&gt;</code></td><td><b>same-dir</b> (default): sessions share the folder. <b>worktree</b>: a git worktree each, no edit conflicts. <b>session</b>: exactly one. <kbd>w</kbd> toggles at runtime.</td></tr>
+              <tr><td><code>--capacity &lt;N&gt;</code></td><td>Max concurrent sessions (default 32)</td></tr>
+              <tr><td><code>--permission-mode</code></td><td>e.g. <code>acceptEdits</code>: fewer approvals on your phone</td></tr>
+              <tr><td><code>-c</code>, <code>--session-id</code></td><td>Bring sessions back after stopping the server (about 4 h)</td></tr>
+              <tr><td><code>--[no-]create-session-in-dir</code></td><td>Pre-create a session to type right away (on by default)</td></tr>
+              <tr><td><code>--chrome</code> / <code>--no-chrome</code></td><td>Let remote sessions use Chrome on the host</td></tr>
+              <tr><td><code>--verbose</code>, <code>--debug-file</code></td><td>Troubleshooting</td></tr>
+            </tbody>
+          </table>
+          <div class="flagb" data-widget="flagBuilder">
+            <div class="ctl"><span>--spawn</span><div class="seg" data-key="spawn">
+              <button data-v="same-dir">same-dir</button><button data-v="worktree">worktree</button><button data-v="session">session</button></div></div>
+            <div class="ctl"><span>--capacity</span><div class="seg" data-key="cap">
+              <button data-v="4">4</button><button data-v="8">8</button><button data-v="32">32</button></div></div>
+            <div class="ctl"><span>--permission-mode</span><div class="seg" data-key="perm">
+              <button data-v="default">default</button><button data-v="acceptEdits">acceptEdits</button></div></div>
+            <div class="terminal fb-cmd" data-role="cmd"></div>
+            <div class="fb-diagram" data-role="diagram"></div>
+            <div class="fb-note" data-role="note">&nbsp;</div>
+            <div class="toolbar">
+              <button class="btn primary" data-role="run">Next preset <span class="kbd">B</span></button>
+              <button class="btn" data-role="reset">Reset <span class="kbd">R</span></button>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Optional detail slide. Flag builder: B steps through three presets
+          (default, the worktree power-user setup, single session); you can also click
+          the toggles. The command on screen is what you'd type; the diagram shows N
+          sessions sharing one folder versus N worktrees.
+          The diagram draws at most 8 sessions; the number is the capacity, not a
+          measurement. Illustrative.
+          -c / --continue and --session-id bring sessions back after you stop the server,
+          for about 4 hours.
+          Source: code.claude.com/docs/en/remote-control, checked 2026-11-04.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Remote Control: what you can close" class="option rcssh">
+        <div class="opt-kicker rc-k">Remote Control &middot; client vs host</div>
+        <h2 class="headline">Close the client &rarr; Claude keeps working.<br>Close the host &rarr; Claude stops.</h2>
+        <div class="split">
+          <div class="card side client">
+            <h4>✅ Client side &middot; safe to close</h4>
+            <p class="sub">phone app, browser, Desktop on another computer</p>
+            <ul>
+              <li>The session keeps running on the host. Nothing is lost.</li>
+              <li>Open the app again: same conversation, progress synced.</li>
+              <li>Push still reaches you on &ldquo;done&rdquo; or &ldquo;needs a decision&rdquo;.</li>
+              <li>Switch freely: phone &rarr; browser &rarr; terminal.</li>
+            </ul>
+          </div>
+          <div class="card side host">
+            <h4>⏸ Host side &middot; must stay on</h4>
+            <p class="sub">the machine running <code>claude</code></p>
+            <table class="mini">
+              <tr><th>Lid closed, sleep, network drop</th><td>⏸ Goes offline, work pauses. Reconnects when the host is back.</td></tr>
+              <tr><th>Terminal closed, Desktop quit, claude stopped</th><td>❌ Session stops. Bring it back: <code>claude --continue</code> or <code>--resume</code>. Server mode: <code>remote-control --continue</code> (about 4 h)</td></tr>
+              <tr><th>Long outage, host awake</th><td>Interactive (<code>--rc</code>, <code>/rc</code>, Desktop): ✅ keeps working, reconnects. Server mode: ❌ exits after about 10 min.</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="where">
+          <span class="q">So where does the host run?</span>
+          <span><b>My laptop</b> ⏸ can't close it: it <em>is</em> the host</span>
+          <span><b>An always-on machine</b> ✅ laptop and phone are only clients &rarr; that's SSH</span>
+        </div>
+        <aside class="notes">
+          One core idea. Desktop vs CLI makes no difference here: what matters is whether
+          that machine is the client or the host. Running example: at 17:30 with
+          Remote Control on the laptop, closing the lid pauses api-refactor until you
+          open it at home. Press down for the live version.
+          Security and data: outbound HTTPS only, short-lived scoped credentials, the
+          transcript is stored at Anthropic for sync. Optional Trusted Devices (biometric
+          step-up every 18 hours). disableRemoteControl turns it off org- or machine-wide.
+          Some commands are local-only (/plugin, /resume). Many work remotely with an
+          argument (/model sonnet, /effort high, /compact).
+          Source: code.claude.com/docs/en/remote-control, checked 2026-11-04.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Close the client, close the host (demo)" class="option rcssh" data-interactive>
+        <div class="opt-kicker rc-k">Remote Control &middot; live</div>
+        <h2>Pull the plug on each side</h2>
+        <div class="rcdemo" data-widget="rcClose">
+          <div class="dev client" data-role="client"><b>📱 Phone</b><span>Claude app &middot; client</span><i data-role="client-st">connected</i></div>
+          <div class="link"><span class="relay">Anthropic relay</span></div>
+          <div class="dev host" data-role="host"><b>💻 Laptop</b><span><code>claude --rc</code> &middot; host</span><i data-role="host-st">working</i></div>
+          <div class="session" data-role="session">
+            <div class="sh"><span>api-refactor</span><span class="st" data-role="sess-st">✅ working</span></div>
+            <div class="bar"><span data-role="bar"></span></div>
+          </div>
+        </div>
+        <div class="rc-verdict" data-role="verdict">&nbsp;</div>
+        <div class="toolbar" style="margin-top:10px;margin-bottom:0">
+          <button class="btn primary" data-role="run">Next event <span class="kbd">B</span></button>
+          <button class="btn" data-role="reset">Reset <span class="kbd">R</span></button>
+          <span class="label">event <b data-role="count">0/4</b></span>
+        </div>
+        <aside class="notes">
+          Before pressing: "watch the session bar, not the devices".
+          1: close the phone app. The host keeps working, the bar keeps moving.
+          2: open the phone again: same conversation, progress synced.
+          3: close the laptop lid. The host sleeps: session offline, work paused.
+          It reconnects on wake.
+          4: quit claude on the host. The session stops; bring it back with
+          claude --continue.
+          Illustrative animation, not a capture.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="SSH: three flavours, three lifetimes" class="option rcssh">
+        <div class="opt-kicker ssh-k">SSH &middot; host = remote machine, client = your laptop</div>
+        <h2>Claude over SSH: three flavours, three lifetimes</h2>
+        <table class="matrix ssh-table">
+          <thead><tr><th style="width:15%"></th><th>Desktop app &rarr; SSH environment</th><th>Plain <code>ssh</code> in a terminal</th><th><code>herdr machine add</code></th></tr></thead>
+          <tbody>
+            <tr><th>Setup</th><td>Environment selector &rarr; New environment &rarr; SSH. Installs Claude Code on the remote at first connect.</td><td><code>ssh devbox</code>, then <code>claude</code></td><td>Once, from the laptop. Installs and starts herdr on the remote.</td></tr>
+            <tr><th>Where Claude runs</th><td>Remote, under a background helper</td><td>Remote, as a child of your SSH shell</td><td>Remote, under the remote herdr server</td></tr>
+            <tr class="hl"><th>Client goes away <small>Wi-Fi, lid, quit</small></th><td>✅ Keeps running until done or it needs you. Reconnects by itself with an agent key.</td><td>❌ Stops. Conversation saved (<code>--continue</code>), in-flight work lost.</td><td>✅ Keeps running. Panes dim until herdr reconnects.</td></tr>
+            <tr><th>⚠️ Catch</th><td>No Browser pane: forward ports yourself</td><td>Disconnect = work lost</td><td>Third-party tool</td></tr>
+            <tr><th>Overview</th><td>Desktop sidebar</td><td>&mdash;</td><td>One TUI, all machines: working / blocked / done</td></tr>
+            <tr><th>From phone</th><td>✅ with Remote Control on</td><td>✅ with Remote Control on, only while SSH is alive</td><td>✅ with Remote Control on</td></tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          Same lens as Remote Control: the remote machine is the host, your laptop is the
+          client. Question: does the host process survive when the client goes away?
+          Desktop SSH: Claude runs under a background helper Desktop installs on the
+          remote (Desktop v2.31226.0+). The helper stops after 30 days without a
+          connection, and on Linux KillUserProcesses=yes can end the processes.
+          Add SSH connection takes Name, user@host or a ~/.ssh/config alias, port, key,
+          worktree folder. Auto-reconnect needs a login without a prompt (SSH-agent key).
+          Extras: permission modes, connectors, plugins and MCP all work. Skills come from
+          the remote ~/.claude/skills. No Browser pane or preview servers:
+          ssh -N -L 3000:localhost:3000 devbox. You can't move an SSH session to the cloud.
+          Remote host: Linux/macOS (Windows with limits), SFTP enabled, about 1 GB free.
+          Plain ssh: claude is a child of your SSH shell, so the disconnect (SIGHUP) ends it.
+          herdr: young (v0.9.x). Remote panes use the remote's own commands, config and
+          secrets. Host-key changes need an interactive herdr --remote &lt;host&gt;.
+          Running example: api-refactor on the devbox; close the lid at 17:30. Column 2
+          dies, columns 1 and 3 keep going. Press down for herdr.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="herdr machine add" class="option rcssh">
+        <div class="opt-kicker ssh-k">SSH &middot; herdr</div>
+        <h2>herdr machine add: one TUI, every machine</h2>
+        <div class="terminal"><span class="p">$</span> herdr machine add devbox --label "Devbox"   <span class="dim"># once, from the laptop</span>
+<span class="p">$</span> herdr                                        <span class="dim"># local TUI: Local + Devbox in the sidebar</span></div>
+        <div class="grid-2 herdr-why">
+          <div class="card pad-sm"><h4>Stay in your local TUI</h4><p>Laptop agents and devbox agents sit side by side in one sidebar.</p></div>
+          <div class="card pad-sm"><h4>Pick a machine, get an agent</h4><p><kbd>prefix</kbd>+<kbd>w</kbd> &rarr; select &rarr; Enter. No second terminal, no nested SSH.</p></div>
+          <div class="card pad-sm"><h4>Background updates</h4><p>A blocked agent on the devbox shows up while you work locally.</p></div>
+          <div class="card pad-sm"><h4>Git over SSH</h4><p><code>ForwardAgent yes</code> for that host. Desktop SSH disables agent forwarding.</p></div>
+        </div>
+        <aside class="notes">
+          Why herdr machine add instead of "ssh in, then run herdr": you never leave your
+          local herdr. machine add takes an SSH config host or ssh://you@server:2222; it
+          offers to install herdr on the remote and starts the remote herdr server. Every
+          machine runs its own server, sessions and processes.
+          Other subcommands: herdr machine status (reachable?), list, reconnect, rename,
+          disable, enable, remove. herdr --machine Devbox agent list scripts remote agents
+          without the TUI.
+          Source: herdr.dev/docs/connecting-machines (third-party), checked 2026-11-04.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Pick your setup" class="option rcssh">
+        <div class="opt-kicker">Remote Control vs SSH</div>
+        <h2>Pick your setup</h2>
+        <table class="matrix pick-table">
+          <thead><tr><th style="width:12%"></th><th class="rc-h">Remote Control <small>host = your laptop</small></th><th class="ssh-h">SSH <small>host = an always-on machine</small></th></tr></thead>
+          <tbody>
+            <tr><th>Pros</th>
+              <td>Zero network setup: no ports, VPN or keys. Your full local env: MCP, tools, git credentials, <code>.npmrc</code>. Native app + push. Phone, web and Desktop at once.</td>
+              <td>Closing the laptop is fine (herdr / tmux or Desktop's helper). Lots of CPU and RAM, close to the data. Your laptop stays free.</td></tr>
+            <tr><th>Cons</th>
+              <td>The laptop has to stay awake. Needs a claude.ai login: no API key, Bedrock or LLM gateway.</td>
+              <td>Keys, <code>~/.ssh/config</code>, jump hosts. The remote needs its own dev env: git + gh credentials, registry tokens, the right Node. Port forwarding for dev servers. Plain ssh stops on disconnect.</td></tr>
+            <tr><th>Best for</th>
+              <td>&ldquo;Started at my desk, keep going from the couch or the train&rdquo;</td>
+              <td>&ldquo;Long or heavy work on a beefy machine that never sleeps&rdquo;</td></tr>
+          </tbody>
+        </table>
+        <blockquote class="pull"><p>They aren't either/or. Press down for the combo.</p></blockquote>
+        <aside class="notes">
+          Remote Control: the transcript is relayed through Anthropic, ZDR/HIPAA orgs can't
+          use it, and some commands are local-only.
+          SSH: Desktop SSH disables ForwardAgent, so your local SSH keys aren't available
+          there. Plain ssh and herdr can forward them (ForwardAgent yes). SSH on its own
+          also works with API keys, Bedrock or gateways; adding Remote Control needs a
+          claude.ai login.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Best of both: SSH host + Remote Control" class="option rcssh">
+        <div class="opt-kicker"><span class="ssh-k">SSH host</span> + <span class="rc-k">Remote Control always on</span></div>
+        <h2>Best of both: an SSH host with Remote Control always on</h2>
+        <div class="combo">
+          <ol class="rows">
+            <li><strong>Log in once on the remote</strong> with your claude.ai account: <code>claude</code> &rarr; <code>/login</code>. Not an API key.</li>
+            <li><strong>Always on</strong>: <code>/config</code> &rarr; Enable Remote Control for all sessions. Desktop: Settings &rarr; Code &rarr; Connect new sessions.</li>
+            <li><strong>Start agents that survive the disconnect</strong>: a herdr pane, tmux, or a Desktop SSH environment. Plain ssh shows up too, but stops on a drop.</li>
+          </ol>
+          <div class="stack">
+            <figure class="code-window" data-code data-lang="json" data-file="~/.claude/settings.json (remote)">
+              <script type="text/template">
+{ "remoteControlAtStartup": true }
+              </script>
+            </figure>
+            <ul class="rows result">
+              <li>Host never sleeps: nothing to close</li>
+              <li>Laptop and phone are only clients</li>
+              <li>Every session on your phone, with push</li>
+            </ul>
+          </div>
+        </div>
+        <blockquote class="pull hero"><p>Remote Control gives you a remote. SSH gives you a home that never sleeps.</p></blockquote>
+        <aside class="notes">
+          The punchline. It's the Always-on setting from the switch-it-on slide, applied
+          to the SSH host. Turn it on once, and every session started over SSH shows up in
+          the Claude app, with no --rc or /rc to remember.
+          In the earlier terms: the host is an always-on box, so it never has to close;
+          laptop and phone are only clients, and closing a client is harmless.
+          The Remote Control docs recommend this pattern themselves: on a remote machine,
+          run claude in tmux/screen so it survives SSH disconnects.
+          Power-user variant: claude remote-control --spawn worktree in a herdr pane, so
+          you start new sessions from your phone, each in its own worktree.
+          Running example: api-refactor runs in a herdr pane on the devbox; close the lid
+          at 17:30, the push "needs approval" arrives in the car park.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="Does it keep working when I close my laptop?" class="option rcssh">
+        <div class="opt-kicker">Quick reference &middot; Remote Control on everywhere</div>
+        <h2>Does it keep working when I close my laptop?</h2>
+        <table class="matrix quickref">
+          <thead><tr><th>Setup</th><th>Host</th><th>Close the phone <small>client</small></th><th>Close the laptop lid</th></tr></thead>
+          <tbody>
+            <tr><th><span class="tag rc">RC</span> Remote Control on the laptop <small>CLI or Desktop</small></th><td>Laptop</td><td>✅ keeps working</td><td>⏸ pauses, reconnects on wake</td></tr>
+            <tr><th><span class="tag ssh">SSH</span> Desktop app &rarr; SSH environment</th><td>Remote</td><td>✅ keeps working</td><td>✅ keeps working</td></tr>
+            <tr><th><span class="tag ssh">SSH</span> Plain <code>ssh</code> + <code>claude</code></th><td>Remote</td><td>✅ keeps working</td><td>❌ stops, so the phone loses it too</td></tr>
+            <tr><th><span class="tag ssh">SSH</span> herdr machine (or ssh + tmux)</th><td>Remote</td><td>✅ keeps working</td><td>✅ keeps working</td></tr>
+          </tbody>
+        </table>
+        <p class="foot center">Every row has Remote Control on, so the phone column is ✅ everywhere. The last column depends on where the host is, and whether the remote process outlives the SSH connection.</p>
+        <aside class="notes">
+          Backup table for Q&amp;A. Same answers as the earlier slides in one place.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ---- 03 ------------------------------------------------------- -->
+    <section>
+      <section data-part="options" data-title="03 t3code on Linux" class="option">
+        <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="03 t3code"></div>
+        <div class="opt-kicker">Option 03 &middot; self-hosted &middot; web + app</div>
+        <h2>t3code puts a real app in front of an always-on server</h2>
+        <div class="reach tailnet hub two-clients">
+          <div class="clients">
+            <div class="end"><h4>Laptop</h4><p>T3 Code app</p></div>
+            <div class="end"><h4>Phone</h4><p>T3 Code app</p></div>
+          </div>
+          <div class="gap"><span class="wall cloud"><b>Tailscale</b>WireGuard, peer to peer<i>or a private VPN</i></span></div>
+          <div class="end"><h4>Linux server</h4><p>T3 Code service runs the agents, always on</p></div>
+        </div>
+        <div class="opt">
+          <div class="terminal"><span class="p">$</span> curl -fsSL https://t3.codes/install.sh | sh
+<span class="p">$</span> t3 service install
+<span class="p">$</span> t3 pair --tailscale --label "phone"
+<span class="dim">&rarr; QR code, valid 5 minutes</span></div>
+          <div class="grid-2">
+            <div class="card good pad-sm"><h4>Good</h4><ul>
+              <li>Native phone app</li>
+              <li>Always on, 24/7</li>
+              <li>Claude Code, Codex, Cursor&hellip;</li></ul></div>
+            <div class="card bad pad-sm"><h4>Watch out</h4><ul>
+              <li>You run the server</li>
+              <li>Keep it on the tailnet</li>
+              <li>Very early, fast-moving</li></ul></div>
+          </div>
+        </div>
+        <aside class="notes">
+          Three parts: the T3 Code app on the laptop and the phone (or a
+          browser), the tailnet in the middle, and the T3 Code service on the
+          Linux server that runs the agents. Open source GUI for coding agents.
+          My own setup. Source: github.com/pingdotgg/t3code (MIT) and its
+          docs/user/remote-access.md. "t3 pair --tailscale" publishes the server
+          through Tailscale Serve at https://dev-server.&lt;tailnet&gt;.ts.net, which maps
+          to 127.0.0.1:3773, so it is never on the public internet.
+          The pairing link + QR is valid 5 minutes by default.
+          Agents: Claude Code, Codex, Cursor, Grok Build, OpenCode, Antigravity;
+          each needs its own CLI login (claude auth login).
+          The README calls it very early: expect bugs.
+          Running example: the agent runs on the dev server, so packing the laptop changes
+          nothing. At home, open the T3 Code app or the browser and carry on.
+          Press down for pairing permissions if asked.
+        </aside>
+      </section>
+
+      <section data-part="options" data-title="t3code: pairing and permissions">
+        <h2>Each paired device gets its own permissions</h2>
+        <div class="terminal"><span class="p">$</span> t3 pair --tailscale --ttl 15m --label "ipad" \
+    --scope orchestration:read --scope orchestration:operate
+<span class="p">$</span> t3 auth session list                <span class="dim"># sessions + permissions</span>
+<span class="p">$</span> t3 auth session revoke &lt;session-id&gt;</div>
+        <table class="matrix" style="margin-top:20px;font-size:.8em">
+          <thead><tr><th>Symptom in T3</th><th>Missing permission</th></tr></thead>
+          <tbody>
+            <tr><td>&ldquo;This connection cannot read host files&rdquo;</td><td><code>filesystem:read</code></td></tr>
+            <tr><td>Can't save or edit files</td><td><code>filesystem:write</code></td></tr>
+            <tr><td>No commit or push</td><td><code>source-control:write</code></td></tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          From my own server's cheat sheet. Any --scope REPLACES the whole default set.
+          You can't edit a session's permissions: pair again, then revoke the old one.
+          Rule of thumb: if the T3 terminal works but a feature doesn't, it's a
+          missing permission, not the network.
+        </aside>
+      </section>
+    </section>
+
+    <!-- ---- 04 ------------------------------------------------------- -->
+    <section data-part="options" data-title="04 Claude App, Claude-hosted" class="option">
+      <div class="flowbar" data-steps="01 herdr|02 Claude app|03 t3code|04 cloud" data-at="04 cloud"></div>
+      <div class="opt-kicker"><span class="cloud">Option 04 &middot; cloud &middot; GUI</span></div>
+      <h2>Claude-hosted sessions keep running with your laptop shut</h2>
+      <div class="reach hub two-clients to-cloud">
+        <div class="clients">
+          <div class="end"><h4>Laptop</h4><p>Claude app</p></div>
+          <div class="end"><h4>Phone</h4><p>Claude app</p></div>
+        </div>
+        <div class="gap"><span class="wall cloud"><b>Anthropic cloud</b><span>runs the sessions</span><span>no Tailscale or VPN</span></span></div>
+      </div>
+      <div class="opt">
+        <ul class="rows cloud-steps">
+          <li>Desktop: <strong>Open in &gt; Cloud</strong> moves a local session</li>
+          <li>Follow and steer from claude.ai/code or the app</li>
+          <li>Usage counts toward your plan; no compute bill</li>
+        </ul>
+        <div class="grid-2">
+          <div class="card good pad-sm"><h4>Good</h4><ul>
+            <li>Nothing to keep awake</li>
+            <li>Isolated, disposable</li>
+            <li>Many tasks in parallel</li></ul></div>
+          <div class="card bad pad-sm"><h4>Watch out</h4><ul>
+            <li>Code in a reachable repo</li>
+            <li>No private LAN or VPN</li>
+            <li>No bypass-permissions</li></ul></div>
+        </div>
+      </div>
+      <aside class="notes">
+        The zero-ops end. Two parts only: the Claude app on the laptop and the
+        phone, and Anthropic's cloud that runs the sessions. No server of yours,
+        no Tailscale: the apps connect to Anthropic over HTTPS. Start from
+        desktop, web or phone; nothing of yours stays on.
+        Source: code.claude.com/docs/en/desktop. Cloud sessions
+        "continue even if you close the app or shut down your computer".
+        Open in &gt; Cloud carries the conversation over as a summary (not for SSH
+        or WSL sessions). Custom cloud environments set network access level and
+        env vars. Cloud sessions support Accept edits, Plan and Auto, not Bypass.
+        Running example: move the session with Open in &gt; Cloud before you
+        leave; it keeps going during the drive. Catch: it can't reach the
+        database on the office LAN.
+      </aside>
+    </section>
+
+    <!-- ==================================================================
+         CHOOSING
+         ================================================================== -->
+
+    <section data-part="choose" data-title="Questions" class="title-slide" data-transition="fade">
+      <span class="eyebrow">Thank you</span>
+      <h1>Questions?</h1>
+      <div class="links" style="grid-template-columns:repeat(3,1fr)">
+        <a class="card" href="https://tailscale.com" target="_blank" rel="noopener">
+          <h4>Tailscale</h4><p>Private mesh network.</p><div class="url">tailscale.com</div></a>
+        <a class="card" href="https://mosh.org" target="_blank" rel="noopener">
+          <h4>mosh</h4><p>Mobile shell over UDP.</p><div class="url">mosh.org</div></a>
+        <a class="card" href="https://github.com/ogulcancelik/herdr" target="_blank" rel="noopener">
+          <h4>herdr</h4><p>Agent multiplexer.</p><div class="url">github.com/ogulcancelik/herdr</div></a>
+        <a class="card" href="https://github.com/pingdotgg/t3code" target="_blank" rel="noopener">
+          <h4>t3code</h4><p>GUI for coding agents.</p><div class="url">github.com/pingdotgg/t3code</div></a>
+        <a class="card" href="https://code.claude.com/docs/en/remote-control" target="_blank" rel="noopener">
+          <h4>Remote Control</h4><p>Local session, any device.</p><div class="url">code.claude.com/docs</div></a>
+        <a class="card good" href="https://code.claude.com/docs/en/desktop" target="_blank" rel="noopener">
+          <h4>Claude desktop</h4><p>Local and cloud sessions.</p><div class="url">code.claude.com/docs</div></a>
+      </div>
+      <aside class="notes">
+        Open the floor. Offer to share the server cheat sheet and setup notes.
+      </aside>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= deck chrome: leave this alone ================= -->
+<nav id="rail" aria-label="Chapters"></nav>
+
+<div id="context">
+  <span class="part" data-role="part">Intro</span>
+  <span class="hint"><b data-role="hint"></b></span>
+</div>
+
+<div class="overlay" id="palette-overlay">
+  <div class="palette" role="dialog" aria-label="Jump to slide">
+    <input type="text" placeholder="Jump to a slide&hellip;" data-role="q" autocomplete="off" spellcheck="false">
+    <div class="results" data-role="results"></div>
+    <div class="foot">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
+      <span><kbd>Enter</kbd> jump</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="help-overlay">
+  <div class="helpcard" role="dialog" aria-label="Keyboard shortcuts">
+    <h3>Keyboard</h3>
+    <dl>
+      <dt><kbd>&rarr;</kbd> <kbd>Space</kbd></dt><dd>next slide / next fragment</dd>
+      <dt><kbd>&larr;</kbd></dt><dd>previous</dd>
+      <dt><kbd>&darr;</kbd> <kbd>&uarr;</kbd></dt><dd>optional depth slides</dd>
+      <dt><kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>/</kbd></dt><dd>jump to any slide</dd>
+      <dt><kbd>B</kbd></dt><dd>run the demo on an interactive slide</dd>
+      <dt><kbd>R</kbd></dt><dd>reset the interactive demo</dd>
+      <dt><kbd>D</kbd></dt><dd>draw on the slide</dd>
+      <dt><kbd>C</kbd></dt><dd>clear drawing</dd>
+      <dt><kbd>O</kbd> <kbd>Esc</kbd></dt><dd>slide overview</dd>
+      <dt><kbd>S</kbd></dt><dd>speaker notes window</dd>
+      <dt><kbd>F</kbd></dt><dd>fullscreen</dd>
+      <dt><kbd>?</kbd></dt><dd>this help</dd>
+    </dl>
+  </div>
+</div>
+
+<canvas id="annotate"></canvas>
+<div id="draw-badge">&#9998; draw mode — <kbd>C</kbd> clear, <kbd>D</kbd> exit</div>
+
+<script src="node_modules/reveal.js/dist/reveal.js"></script>
+<script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
+<script src="node_modules/reveal.js/plugin/zoom/zoom.js"></script>
+<script src="js/code.js"></script>
+<script src="js/widgets.js"></script>
+<!-- deck-specific widgets register here, before DeckWidgets.init() runs -->
+<script src="js/my-widgets.js"></script>
+<script src="js/chrome.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1280,
+    height: 740,
+    // 0.07, not the default 0.04: the letterbox is what keeps the chapter rail
+    // off the slide content at 16:9 and wider.
+    margin: 0.07,
+    minScale: 0.2,
+    maxScale: 2.0,
+    center: true,
+    hash: true,
+    controls: true,
+    controlsLayout: 'edges',
+    progress: true,
+    slideNumber: 'c/t',
+    // PDF handout: one page per slide, not one per fragment
+    pdfSeparateFragments: false,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    // our own overlays and widgets own these keys: B C D R and /
+    // Space, PageDown and PageUp (what clickers send) move along the main
+    // path like the arrow keys, so vertical sub-slides stay optional: only the
+    // down arrow enters them. Fragments still step on the way.
+    keyboard: { 66: null, 67: null, 68: null, 82: null, 191: null,
+                32: 'right', 34: 'right', 33: 'left' },
+    plugins: [RevealNotes, RevealZoom]
+  }).then(() => {
+    DeckCode.render();
+    DeckWidgets.init();
+    DeckChrome.init();
+  });
+</script>
+</body>
+</html>
